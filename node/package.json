@@ -18,6 +18,7 @@
   "dependencies": {
     "@storagehub-sdk/core": "^0.1.0",
     "@storagehub-sdk/msp-client": "^0.1.0",
+    "dotenv": "^17.2.3",
     "ethers": "^6.15.0"
   },
   "devDependencies": {

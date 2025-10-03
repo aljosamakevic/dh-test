@@ -14,6 +14,9 @@ importers:
       '@storagehub-sdk/msp-client':
         specifier: ^0.1.0
         version: 0.1.0(@storagehub-sdk/core@0.1.0(typescript@5.9.3))
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       ethers:
         specifier: ^6.15.0
         version: 6.15.0
@@ -375,6 +378,10 @@ packages:
 
   bn.js@5.2.2:
     resolution: {integrity: sha512-v2YAxEmKaBLahNwE1mjp4WON6huMNeuDvagFZW+ASCuA/ku0bXR9hSMw0XpiqMoA3+rmnyck/tPRSFQkoC9Cuw==}
+
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
+    engines: {node: '>=12'}
 
   esbuild@0.25.10:
     resolution: {integrity: sha512-9RiGKvCwaqxO2owP61uQ4BgNborAQskMR6QusfWzQqv7AZOg5oGehdY2pRJMTKuwxd1IDBP4rSbI5lHzU7SMsQ==}
@@ -760,6 +767,8 @@ snapshots:
   aes-js@4.0.0-beta.5: {}
 
   bn.js@5.2.2: {}
+
+  dotenv@17.2.3: {}
 
   esbuild@0.25.10:
     optionalDependencies:
