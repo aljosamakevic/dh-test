@@ -26,7 +26,7 @@ import {
   type ValueProp,
 } from '@storagehub-sdk/msp-client';
 
-import { chainInfo } from '../data/chainInfo';
+import { chainInfo } from '../data/chainInfo.js';
 import { Readable } from 'node:stream';
 
 const main = async () => {
@@ -63,18 +63,21 @@ const main = async () => {
     rpcUrl: chainInfo.rpcUrl,
     chain: chain,
     walletClient: walletClient,
+    filesystemContractAddress: '0x0000000000000000000000000000000000000404' as `0x${string}`,
   });
 
   const provider = new WsProvider(chainInfo.wsUrl);
   const userApi = await ApiPromise.create({
     provider,
     typesBundle: BundledTypes,
+    noInitWarn: true,
   });
 
   // MSP info endpoints
   const mspInfo: InfoResponse = await mspClient.getInfo();
   //   console.log('MSP Info:', mspInfo);
   const mspId = mspInfo.mspId as `0x${string}`;
+  console.log('MSP id:', mspId);
 
   //   const health = await mspClient.getHealth();
   //   console.log('MSP service health:', health);
@@ -98,21 +101,24 @@ const main = async () => {
   //   mspClient.setToken(verified.token);
   //   console.log('Verified user', verified.user);
 
-  //   create bucket
-  const bucketName = 'init-bucket';
+  //   get Value props
   const valueProps: ValueProp[] = await mspClient.getValuePropositions();
   if (!Array.isArray(valueProps) || valueProps.length === 0) {
     throw new Error('No value props availabile from this MSP.');
   }
-  console.log('MSP ValueProps: ', valueProps);
+  //   console.log('MSP ValueProps: ', valueProps);
+
   const valuePropId = valueProps[0].id as `0x${string}`;
   console.log('Chosen value prop id: ', valuePropId);
 
+  //   create bucket
+  //   const bucketName = 'init-bucket';
+  const bucketName = 'b1';
   const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
   console.log('Derived bucket Id: ', bucketId);
 
-  const bucketIdExample = '0xb1bf58ff2c2b53bdaddc9279116e0af3bdd77b7a656aaf65a0446242c769e1a0';
-  const bucketBeforeCreation = await userApi.query.providers.buckets(bucketIdExample);
+  //   const bucketIdExample = '0xf431e4c82e225eed8fb11671e4dbabbb747f7127bf226f2a4886023471afeb9a';
+  const bucketBeforeCreation = await userApi.query.providers.buckets(bucketId);
   console.log('Bucket before creation is empty', bucketBeforeCreation.isEmpty);
 
   const txHashBucket = await storageHubClient.createBucket(mspId, bucketName, false, valuePropId);
@@ -124,12 +130,14 @@ const main = async () => {
   }
   console.log('Bucket created receipt:', receiptBucket);
 
-  const bucketAfterCreation = await userApi.query.providers.buckets(bucketIdExample);
+  const bucketAfterCreation = await userApi.query.providers.buckets(bucketId);
   console.log('Bucket after creation exists', !bucketAfterCreation.isEmpty);
   const bucketData = bucketAfterCreation.unwrap();
   console.log('Bucket data:', bucketData);
   console.log('Bucket userId:', bucketData.userId.toString());
+  //   TO DO compare values here
   console.log('Bucket mspId:', bucketData.mspId.toString());
+  console.log('Bucket mspId matches initial mspId', bucketData.mspId.toString() === mspId);
 
   // Setting up the FileManager instance
 
@@ -154,7 +162,7 @@ const main = async () => {
   const replicas = 0;
 
   const txHashStorageReq = await storageHubClient.issueStorageRequest(
-    bucketIdExample,
+    bucketId as `0x${string}`,
     fileLocation,
     fingerprint.toHex() as `0x${string}`,
     fileSizeBigInt,
@@ -239,30 +247,9 @@ const main = async () => {
   const readableStream = Readable.fromWeb(downloadResponse.stream as any);
   readableStream.pipe(writeStream);
   console.log('Downloaded file saved to:', downloadPath);
+
+  await userApi.disconnect();
 };
-
-// const assertBucketDoesNotExist = async (mspClient: MspClient, bucketId: string): Promise<void> => {
-//   try {
-//     const bucket: Bucket | null = await mspClient.getBucket(bucketId);
-
-//     if (bucket) {
-//       throw new Error(`Bucket already exists (id: ${bucketId})`);
-//     }
-//     return;
-//   } catch (error: any) {
-//     if (error?.status === 500) {
-//       // status 500 - 'Database error: Record not found' - bucket does not exist - keep going
-//       return;
-//     }
-
-//     if (error?.status === 401) {
-//       throw new Error('Unauthorized MSP request — verify() and set token first.');
-//     }
-
-//     console.error('Unexpected error while checking bucket:', error?.message || error);
-//     throw error;
-//   }
-// };
 
 main().catch((e) => {
   console.error(e);
