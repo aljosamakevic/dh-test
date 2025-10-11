@@ -1,46 +1,47 @@
-import { MspClient } from '@storagehub-sdk/msp-client';
+import { InfoResponse, MspClient, StatsResponse, VerifyResponse } from '@storagehub-sdk/msp-client';
 import { NETWORKS } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
+import { address, walletClient } from './clientService.js';
 
-// import { chainInfo } from '../../data/chainInfo.js';
-
-// export class MspService {
-//   private _mspClient: MspClient;
-//   private _mspInfo: InfoResponse | null = null;
-
-//   private constructor(mspClient: MspClient) {
-//     this._mspClient = mspClient;
-//   }
-
-//   static async create(): Promise<MspService> {
 const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.stagenet.mspBaseUrl };
 const mspClient = await MspClient.connect(httpCfg);
 
-export { mspClient };
-//     return new MspService(mspClient);
-//   }
+const getMspInfo = async (): Promise<InfoResponse> => {
+  const mspInfo = await mspClient.getInfo();
+  console.log(`MSP ID: ${mspInfo.mspId}`);
+  return mspInfo;
+};
 
-//   async getMspInfo(): Promise<InfoResponse> {
-//     if (!this._mspInfo) {
-//       this._mspInfo = await this._mspClient.getInfo();
-//     }
-//     return this._mspInfo;
-//   }
+const getValueProposition = async (): Promise<`0x${string}`> => {
+  const valueProps = await mspClient.getValuePropositions();
+  if (!Array.isArray(valueProps) || valueProps.length === 0) {
+    throw new Error('No value propositions available from MSP');
+  }
+  const valuePropId = valueProps[0].id as `0x${string}`;
+  console.log(`   Value Prop ID: ${valuePropId}`);
+  return valuePropId;
+};
 
-//   get mspClient(): MspClient {
-//     return this._mspClient;
-//   }
+const getMspStats = async (): Promise<StatsResponse> => {
+  const stats = await mspClient.getStats();
+  console.log('MSP Stats:', stats);
+  return stats;
+};
 
-//   async getValuePropositions(): Promise<ValueProp[]> {
-//     const valueProps = await this._mspClient.getValuePropositions();
-//     if (!Array.isArray(valueProps) || valueProps.length === 0) {
-//       throw new Error('No value propositions available from this MSP.');
-//     }
-//     return valueProps;
-//   }
+// Authenticate user
+const authenticateUser = async (): Promise<VerifyResponse> => {
+  const { message } = await mspClient.getNonce(address, NETWORKS.stagenet.id);
+  // console.log('message', message);
+  const signature = await walletClient.signMessage({
+    message,
+    account: address,
+  });
+  // console.log('signature', signature);
+  const verified: VerifyResponse = await mspClient.verify(message, signature);
+  // console.log('verified', verified);
+  mspClient.setToken(verified.token);
+  // console.log('Verified user', verified.user);
+  return verified;
+};
 
-//   async getFirstValuePropId(): Promise<`0x${string}`> {
-//     const valueProps = await this.getValuePropositions();
-//     return valueProps[0].id as `0x${string}`;
-//   }
-// }
+export { mspClient, getMspStats, getMspInfo, getValueProposition, authenticateUser };
