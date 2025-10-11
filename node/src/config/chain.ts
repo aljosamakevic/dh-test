@@ -1,9 +1,9 @@
 import { defineChain } from 'viem';
-import { chainInfo } from '../../data/chainInfo.js';
+import { NETWORKS } from './networks.js';
 
 export const chain = defineChain({
-  id: chainInfo.id,
-  name: chainInfo.name,
+  id: NETWORKS.stagenet.id,
+  name: NETWORKS.stagenet.name,
   nativeCurrency: { name: 'Have', symbol: 'HAVE', decimals: 18 },
-  rpcUrls: { default: { http: [chainInfo.rpcUrl] } },
+  rpcUrls: { default: { http: [NETWORKS.stagenet.rpcUrl] } },
 });

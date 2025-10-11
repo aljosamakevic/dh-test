@@ -1,24 +1,11 @@
 import 'dotenv/config';
 import '@storagehub/api-augment';
-import { assert, ethers } from 'ethers';
-import { privateKeyToAccount } from 'viem/accounts';
 import { createReadStream, createWriteStream, statSync } from 'node:fs';
-import { createPublicClient, createWalletClient, defineChain, http } from 'viem';
-import {
-  FileManager,
-  HttpClientConfig,
-  initWasm,
-  LocalWallet,
-  ReplicationLevel,
-  StorageHubClient,
-} from '@storagehub-sdk/core';
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import { FileManager, initWasm, ReplicationLevel } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256 } from '@polkadot/types/interfaces';
-import { types as BundledTypes } from '@storagehub/types-bundle';
 import {
   Bucket,
-  MspClient,
   UploadReceipt,
   VerifyResponse,
   type InfoResponse,
@@ -26,60 +13,16 @@ import {
   type ValueProp,
 } from '@storagehub-sdk/msp-client';
 
-import { chainInfo } from '../data/chainInfo.js';
 import { Readable } from 'node:stream';
+
+import { mspClient } from './services/mspService.js';
+import { storageHubClient, address, publicClient, account, substrateApi } from './services/clientService.js';
 
 const main = async () => {
   await initWasm();
 
-  const httpCfg: HttpClientConfig = { baseUrl: chainInfo.baseUrl };
-  const mspClient = await MspClient.connect(httpCfg);
-
-  //   const provider = new ethers.JsonRpcProvider(chainInfo.rpcUrl, {
-  //     chainId: chainInfo.id,
-  //     name: chainInfo.name,
-  //   });
-
-  //   let wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-  //   const wallet = LocalWallet.fromPrivateKey(process.env.PRIVATE_KEY!);
-  //   const address = await wallet.getAddress();
-  //   console.log('Using address:', address);
-
-  const chain = defineChain({
-    id: chainInfo.id,
-    name: chainInfo.name,
-    nativeCurrency: { name: 'Have', symbol: 'HAVE', decimals: 18 },
-    rpcUrls: { default: { http: [chainInfo.rpcUrl] } },
-  });
-
-  // viem wallet client
-  const account = privateKeyToAccount(process.env.PRIVATE_KEY! as `0x${string}`);
-  const address = account.address;
-  //   console.log('Using address:', address);
-  const walletClient = createWalletClient({ chain, account, transport: http(chainInfo.rpcUrl) });
-  const publicClient = createPublicClient({ chain, transport: http(chainInfo.rpcUrl) });
-
-  const storageHubClient = new StorageHubClient({
-    rpcUrl: chainInfo.rpcUrl,
-    chain: chain,
-    walletClient: walletClient,
-    filesystemContractAddress: '0x0000000000000000000000000000000000000404' as `0x${string}`,
-  });
-
-  const provider = new WsProvider(chainInfo.wsUrl);
-  const userApi = await ApiPromise.create({
-    provider,
-    typesBundle: BundledTypes,
-    noInitWarn: true,
-  });
-
-  // MSP info endpoints
-  const mspInfo: InfoResponse = await mspClient.getInfo();
-  //   console.log('MSP Info:', mspInfo);
-  const mspId = mspInfo.mspId as `0x${string}`;
-  console.log('MSP id:', mspId);
-
-  //   const health = await mspClient.getHealth();
+  // Check MSP health, stats, and value propositions
+  //   const health: HealthResponse = await mspClient.getHealth();
   //   console.log('MSP service health:', health);
   //   const stats: StatsResponse = await mspClient.getStats();
   //   console.log('MSP Stats:', stats);
@@ -87,69 +30,70 @@ const main = async () => {
   //   console.log('MSP ValueProps count:', Array.isArray(valueProps) ? valueProps.length : 0);
   //   console.log('MSP ValueProps:', valueProps.length > 0 ? valueProps : 'no value props found');
 
-  //   const nonce = await mspClient.getNonce(address, chainInfo.id);
-  //   console.log('Full message', nonce);
+  // Authenticate user
   //   const { message } = await mspClient.getNonce(address, chainInfo.id);
   //   console.log('message', message);
-
   //   const signature = await walletClient.signMessage({ message });
   //   console.log('signature', signature);
-
   //   const verified: VerifyResponse = await mspClient.verify(message, signature);
   //   console.log('verified', verified);
-
   //   mspClient.setToken(verified.token);
   //   console.log('Verified user', verified.user);
 
-  //   get Value props
+  //   CREATE BUCKET
+  // Derive bucket ID
+  const bucketName = 'bucket-001';
+  const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
+  console.log('Derived bucket Id: ', bucketId);
+  // Check that the bucket doesn't exist yet
+  const bucketBeforeCreation = await substrateApi.query.providers.buckets(bucketId);
+  console.log('Bucket before creation is empty', bucketBeforeCreation.isEmpty);
+
+  // Get MSP info
+  const mspInfo: InfoResponse = await mspClient.getInfo();
+  //   console.log('MSP Info:', mspInfo);
+  const mspId = mspInfo.mspId as `0x${string}`;
+  console.log('MSP id:', mspId);
+
+  //   get MSP Value props
   const valueProps: ValueProp[] = await mspClient.getValuePropositions();
   if (!Array.isArray(valueProps) || valueProps.length === 0) {
     throw new Error('No value props availabile from this MSP.');
   }
-  //   console.log('MSP ValueProps: ', valueProps);
-
   const valuePropId = valueProps[0].id as `0x${string}`;
   console.log('Chosen value prop id: ', valuePropId);
 
-  //   create bucket
-  //   const bucketName = 'init-bucket';
-  const bucketName = 'b1';
-  const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
-  console.log('Derived bucket Id: ', bucketId);
-
-  //   const bucketIdExample = '0xf431e4c82e225eed8fb11671e4dbabbb747f7127bf226f2a4886023471afeb9a';
-  const bucketBeforeCreation = await userApi.query.providers.buckets(bucketId);
-  console.log('Bucket before creation is empty', bucketBeforeCreation.isEmpty);
-
+  // Create the bucket on chain
   const txHashBucket = await storageHubClient.createBucket(mspId, bucketName, false, valuePropId);
   console.log('Bucket created in tx:', txHashBucket);
 
+  // Wait for the transaction to be mined
   const receiptBucket = await publicClient.waitForTransactionReceipt({ hash: txHashBucket });
   if (receiptBucket.status !== 'success') {
     throw new Error(`Create bucket transaction failed: ${txHashBucket}`);
   }
   console.log('Bucket created receipt:', receiptBucket);
 
-  const bucketAfterCreation = await userApi.query.providers.buckets(bucketId);
+  // Check that the bucket now exists on chain
+  const bucketAfterCreation = await substrateApi.query.providers.buckets(bucketId);
   console.log('Bucket after creation exists', !bucketAfterCreation.isEmpty);
+
   const bucketData = bucketAfterCreation.unwrap();
   console.log('Bucket data:', bucketData);
   console.log('Bucket userId:', bucketData.userId.toString());
-  //   TO DO compare values here
   console.log('Bucket mspId:', bucketData.mspId.toString());
   console.log('Bucket mspId matches initial mspId', bucketData.mspId.toString() === mspId);
 
+  // ISSUE STORAGE REQUEST
   // Setting up the FileManager instance
-
   const filePath = new URL('../files/papermoon_logo.jpeg', import.meta.url).pathname;
   const fileSize = statSync(filePath).size;
-  // console.log('File size:', fileSize);
   const fileManager: FileManager = new FileManager({
     size: fileSize,
     stream: () => Readable.toWeb(createReadStream(filePath)) as ReadableStream<Uint8Array>,
   });
-  const fileLocation = 'papermoon_logo.jpeg';
 
+  // Compute file fingerprint and other details needed for the storage request
   const fingerprint = await fileManager.getFingerprint();
   console.log('File fingerprint:', fingerprint);
   const fileSizeBigInt = BigInt(fileManager.getFileSize());
@@ -158,10 +102,11 @@ const main = async () => {
   //   const peerIds = (mspInfo.multiaddresses || [])
   //   .map((addr: string) => addr.split("/p2p/").pop())
   //   .filter(Boolean);
+  const fileLocation = 'papermoon_logo.jpeg';
   const replicationLevel = ReplicationLevel.Basic;
   const replicas = 0;
 
-  const txHashStorageReq = await storageHubClient.issueStorageRequest(
+  const txHashStorageRequest = await storageHubClient.issueStorageRequest(
     bucketId as `0x${string}`,
     fileLocation,
     fingerprint.toHex() as `0x${string}`,
@@ -171,14 +116,15 @@ const main = async () => {
     replicationLevel,
     replicas
   );
-  console.log('Storage request created in tx:', txHashStorageReq);
+  console.log('Storage request created in tx:', txHashStorageRequest);
 
-  const receiptStorageReq = await publicClient.waitForTransactionReceipt({ hash: txHashStorageReq });
-  if (receiptStorageReq.status !== 'success') {
-    throw new Error(`Storage request transaction failed: ${txHashStorageReq}`);
+  const receiptStorageRequest = await publicClient.waitForTransactionReceipt({ hash: txHashStorageRequest });
+  if (receiptStorageRequest.status !== 'success') {
+    throw new Error(`Storage request transaction failed: ${txHashStorageRequest}`);
   }
-  console.log('Storage request created receipt:', receiptStorageReq);
+  console.log('Storage request created receipt:', receiptStorageRequest);
 
+  // VERIFY STORAGE REQUEST IS ON CHAIN
   // Compute the file key
   const registry = new TypeRegistry();
   const owner = registry.createType('AccountId20', account.address) as AccountId20;
@@ -186,19 +132,20 @@ const main = async () => {
   const fileKey: H256 = await fileManager.computeFileKey(owner, bucketIdH256, fileLocation);
 
   // Check that the storage request exists on chain
-  const storageRequest = await userApi.query.fileSystem.storageRequests(fileKey);
+  const storageRequest = await substrateApi.query.fileSystem.storageRequests(fileKey);
   if (!storageRequest.isSome) {
     throw new Error('Storage request not found on chain');
   }
+  // Read the storage request data
   const storageRequestData = storageRequest.unwrap();
   console.log('Storage request data:', storageRequestData);
   console.log('Storage request bucketId:', storageRequestData.bucketId.toString());
   console.log(
-    'Storage request fingerprint should be the same sa initial fingerprint',
+    'Storage request fingerprint should be the same as initial fingerprint',
     storageRequestData.fingerprint.toString() === fingerprint.toString()
   );
 
-  //   Upload the file
+  // UPLOAD THE FILE TO THE MSP
 
   const uploadReceipt: UploadReceipt = await mspClient.uploadFile(
     bucketId,
@@ -207,7 +154,7 @@ const main = async () => {
     address,
     fileLocation
   );
-  console.log('uploaded:', uploadReceipt);
+  console.log('Uploaded:', uploadReceipt);
   if (uploadReceipt.status !== 'success') {
     throw new Error('File upload failed');
   }
@@ -229,13 +176,13 @@ const main = async () => {
   //   );
   // ...
 
+  // DOWNLOAD THE FILE FROM THE MSP
   const downloadResponse = await mspClient.downloadByKey(fileKey.toHex());
   console.log('downloadResponse status', downloadResponse.status);
   console.log('downloadResponse', downloadResponse);
 
   const downloadFileBlob = await new Response(downloadResponse.stream).blob();
 
-  console.log();
   const isDownloadedFileTheSame =
     Buffer.from(await downloadFileBlob.arrayBuffer()) ===
     Buffer.from(await (await fileManager.getFileBlob()).arrayBuffer());
@@ -248,7 +195,7 @@ const main = async () => {
   readableStream.pipe(writeStream);
   console.log('Downloaded file saved to:', downloadPath);
 
-  await userApi.disconnect();
+  await substrateApi.disconnect();
 };
 
 main().catch((e) => {

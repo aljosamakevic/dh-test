@@ -1,43 +1,46 @@
 import { MspClient } from '@storagehub-sdk/msp-client';
-import type { InfoResponse, ValueProp } from '@storagehub-sdk/msp-client';
+import { NETWORKS } from '../config/networks.js';
+import { HttpClientConfig } from '@storagehub-sdk/core';
 
-import { chainInfo } from '../../data/chainInfo.js';
+// import { chainInfo } from '../../data/chainInfo.js';
 
-export class MspService {
-  private _mspClient: MspClient;
-  private _mspInfo: InfoResponse | null = null;
+// export class MspService {
+//   private _mspClient: MspClient;
+//   private _mspInfo: InfoResponse | null = null;
 
-  private constructor(mspClient: MspClient) {
-    this._mspClient = mspClient;
-  }
+//   private constructor(mspClient: MspClient) {
+//     this._mspClient = mspClient;
+//   }
 
-  static async create(): Promise<MspService> {
-    const httpCfg = { baseUrl: chainInfo.baseUrl };
-    const mspClient = await MspClient.connect(httpCfg);
-    return new MspService(mspClient);
-  }
+//   static async create(): Promise<MspService> {
+const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.stagenet.mspBaseUrl };
+const mspClient = await MspClient.connect(httpCfg);
 
-  async getMspInfo(): Promise<InfoResponse> {
-    if (!this._mspInfo) {
-      this._mspInfo = await this._mspClient.getInfo();
-    }
-    return this._mspInfo;
-  }
+export { mspClient };
+//     return new MspService(mspClient);
+//   }
 
-  get mspClient(): MspClient {
-    return this._mspClient;
-  }
+//   async getMspInfo(): Promise<InfoResponse> {
+//     if (!this._mspInfo) {
+//       this._mspInfo = await this._mspClient.getInfo();
+//     }
+//     return this._mspInfo;
+//   }
 
-  async getValuePropositions(): Promise<ValueProp[]> {
-    const valueProps = await this._mspClient.getValuePropositions();
-    if (!Array.isArray(valueProps) || valueProps.length === 0) {
-      throw new Error('No value propositions available from this MSP.');
-    }
-    return valueProps;
-  }
+//   get mspClient(): MspClient {
+//     return this._mspClient;
+//   }
 
-  async getFirstValuePropId(): Promise<`0x${string}`> {
-    const valueProps = await this.getValuePropositions();
-    return valueProps[0].id as `0x${string}`;
-  }
-}
+//   async getValuePropositions(): Promise<ValueProp[]> {
+//     const valueProps = await this._mspClient.getValuePropositions();
+//     if (!Array.isArray(valueProps) || valueProps.length === 0) {
+//       throw new Error('No value propositions available from this MSP.');
+//     }
+//     return valueProps;
+//   }
+
+//   async getFirstValuePropId(): Promise<`0x${string}`> {
+//     const valueProps = await this.getValuePropositions();
+//     return valueProps[0].id as `0x${string}`;
+//   }
+// }
