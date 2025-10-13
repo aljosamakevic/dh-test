@@ -27,7 +27,7 @@ export async function createBucket(bucketName: string) {
     throw new Error(`Bucket creation failed: ${txHash}`);
   }
 
-  return { bucketId, receipt };
+  return { bucketId, txHash };
 }
 
 export async function verifyBucketCreation(bucketId: string) {
