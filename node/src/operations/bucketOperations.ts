@@ -5,10 +5,14 @@ export async function createBucket(bucketName: string) {
   // Get MSP info and value proposition
   const { mspId } = await getMspInfo();
   const valuePropId = await getValueProposition();
+  //    const health = await getMspHealth();
+  //     console.log('MSP Health Status:', health);
 
   // Derive bucket ID
   const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
   console.log(`Derived bucket ID: ${bucketId}`);
+
+  //   throw new Error('TEMP custom stop');
 
   // Check that the bucket doesn't exist yet
   const bucketBeforeCreation = await substrateApi.query.providers.buckets(bucketId);

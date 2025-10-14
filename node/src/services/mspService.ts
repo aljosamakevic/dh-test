@@ -1,4 +1,4 @@
-import { InfoResponse, MspClient, StatsResponse, VerifyResponse } from '@storagehub-sdk/msp-client';
+import { HealthStatus, InfoResponse, MspClient, StatsResponse, VerifyResponse } from '@storagehub-sdk/msp-client';
 import { NETWORKS } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
 import { address, walletClient } from './clientService.js';
@@ -10,6 +10,12 @@ const getMspInfo = async (): Promise<InfoResponse> => {
   const mspInfo = await mspClient.getInfo();
   console.log(`MSP ID: ${mspInfo.mspId}`);
   return mspInfo;
+};
+
+const getMspHealth = async (): Promise<HealthStatus> => {
+  const mspHealth = await mspClient.getHealth();
+  console.log(`MSP Health: ${mspHealth}`);
+  return mspHealth;
 };
 
 const getValueProposition = async (): Promise<`0x${string}`> => {
@@ -44,4 +50,4 @@ const authenticateUser = async (): Promise<VerifyResponse> => {
   return verified;
 };
 
-export { mspClient, getMspStats, getMspInfo, getValueProposition, authenticateUser };
+export { mspClient, getMspStats, getMspInfo, getMspHealth, getValueProposition, authenticateUser };
