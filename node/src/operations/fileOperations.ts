@@ -7,6 +7,10 @@ import { storageHubClient, address, publicClient, substrateApi, account } from '
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
 import { DownloadResult } from '@storagehub-sdk/msp-client';
 
+function extractPeerIDs(multiaddresses: string[]): string[] {
+  return (multiaddresses ?? []).map((addr) => addr.split('/p2p/').pop()).filter((id): id is string => !!id);
+}
+
 export async function uploadFile(bucketId: string, filePath: string, fileName: string) {
   // Setup FileManager
   const fileSize = statSync(filePath).size;
@@ -23,8 +27,13 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
 
   // Get MSP info
   const { mspId, multiaddresses } = await getMspInfo();
-  // TO ASK Is this how I'm supposed to do this part?
-  const peerIds = (multiaddresses || []).map((addr: string) => addr.split('/p2p/').pop()).filter(Boolean);
+  if (!multiaddresses?.length) {
+    throw new Error('MSP multiaddresses are missing');
+  }
+  const peerIds: string[] = extractPeerIDs(multiaddresses);
+  if (peerIds.length === 0) {
+    throw new Error('MSP multiaddresses had no /p2p/<peerId> segment');
+  }
 
   // Issue storage request
   const txHash: `0x${string}` | undefined = await storageHubClient.issueStorageRequest(
@@ -33,7 +42,7 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     fingerprint.toHex() as `0x${string}`,
     fileSizeBigInt,
     mspId as `0x${string}`,
-    multiaddresses,
+    peerIds,
     ReplicationLevel.Basic,
     0
   );
