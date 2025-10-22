@@ -1,18 +1,19 @@
 import { storageHubClient, address, publicClient, substrateApi } from '../services/clientService.js';
-import { getMspInfo, getValueProposition } from '../services/mspService.js';
+import { getMspHealth, getMspInfo, getValueProposition } from '../services/mspService.js';
 
 export async function createBucket(bucketName: string) {
   // Get MSP info and value proposition
   const { mspId } = await getMspInfo();
+  //   const mspInfo = await getMspInfo();
+  //   console.log('MSP Info:', mspInfo);
   const valuePropId = await getValueProposition();
-  //    const health = await getMspHealth();
-  //     console.log('MSP Health Status:', health);
+  console.log(`Value Prop ID: ${valuePropId}`);
+  const health = await getMspHealth();
+  console.log('MSP Health Status:', health);
 
   // Derive bucket ID
   const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
   console.log(`Derived bucket ID: ${bucketId}`);
-
-  //   throw new Error('TEMP custom stop');
 
   // Check that the bucket doesn't exist yet
   const bucketBeforeCreation = await substrateApi.query.providers.buckets(bucketId);
@@ -22,8 +23,16 @@ export async function createBucket(bucketName: string) {
   }
 
   // Create bucket on chain
-  const txHash = await storageHubClient.createBucket(mspId as `0x${string}`, bucketName, false, valuePropId);
-  console.log('Bucket created in tx:', txHash);
+  const txHash: `0x${string}` | undefined = await storageHubClient.createBucket(
+    mspId as `0x${string}`,
+    bucketName,
+    false,
+    valuePropId
+  );
+  console.log('createBucket() txHash:', txHash);
+  if (!txHash) {
+    throw new Error('createBucket() did not return a transaction hash');
+  }
 
   // Wait for transaction
   const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });

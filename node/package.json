@@ -17,19 +17,19 @@
   "packageManager": "pnpm@10.17.0",
   "dependencies": {
     "0g": "^0.4.2",
-    "@polkadot/api": "^16.4.8",
-    "@storagehub-sdk/core": "^0.1.0",
-    "@storagehub-sdk/msp-client": "^0.1.0",
-    "@storagehub/api-augment": "^0.2.4",
-    "@storagehub/types-bundle": "^0.2.4",
+    "@polkadot/api": "^16.4.9",
+    "@storagehub-sdk/core": "^0.2.0",
+    "@storagehub-sdk/msp-client": "^0.2.0",
+    "@storagehub/api-augment": "^0.2.8",
+    "@storagehub/types-bundle": "^0.2.7",
     "dotenv": "^17.2.3",
     "ethers": "^6.15.0",
-    "pnpm": "^10.18.0",
-    "viem": "2.37.12"
+    "pnpm": "^10.19.0",
+    "viem": "2.38.3"
   },
   "devDependencies": {
-    "@polkadot/types": "^16.4.8",
-    "@types/node": "^24.6.2",
+    "@polkadot/types": "^16.4.9",
+    "@types/node": "^24.9.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

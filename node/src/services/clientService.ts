@@ -2,7 +2,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { createPublicClient, createWalletClient, http, WalletClient, PublicClient } from 'viem';
 import { StorageHubClient } from '@storagehub-sdk/core';
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { types as BundledTypes } from '@storagehub/types-bundle';
+import { types } from '@storagehub/types-bundle';
 
 import { config } from '../config/environment.js';
 import { chain } from '../config/chain.js';
@@ -34,7 +34,7 @@ const storageHubClient: StorageHubClient = new StorageHubClient({
 const provider = new WsProvider(NETWORKS.stagenet.wsUrl);
 const substrateApi: ApiPromise = await ApiPromise.create({
   provider,
-  typesBundle: BundledTypes,
+  typesBundle: types,
   noInitWarn: true,
 });
 

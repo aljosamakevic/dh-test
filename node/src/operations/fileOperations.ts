@@ -2,10 +2,10 @@ import { createReadStream, createWriteStream, statSync } from 'node:fs';
 import { Readable } from 'node:stream';
 import { FileManager, ReplicationLevel } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
-import { AccountId20, H256 } from '@polkadot/types/interfaces';
+import { AccountId20, H256, Hash } from '@polkadot/types/interfaces';
 import { storageHubClient, address, publicClient, substrateApi, account } from '../services/clientService.js';
 import { mspClient, getMspInfo } from '../services/mspService.js';
-import { DEMO_CONFIG } from '../config/demoConfig.js';
+import { DownloadResult } from '@storagehub-sdk/msp-client';
 
 export async function uploadFile(bucketId: string, filePath: string, fileName: string) {
   // Setup FileManager
@@ -18,8 +18,8 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   // Get file details
   const fingerprint = await fileManager.getFingerprint();
   const fileSizeBigInt = BigInt(fileManager.getFileSize());
-  console.log(`   File size: ${fileSize} bytes`);
-  console.log(`   Fingerprint: ${fingerprint.toHex()}`);
+  console.log(`File size: ${fileSize} bytes`);
+  console.log(`Fingerprint: ${fingerprint.toHex()}`);
 
   // Get MSP info
   const { mspId, multiaddresses } = await getMspInfo();
@@ -29,7 +29,7 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   //   .filter(Boolean);
 
   // Issue storage request
-  const txHash = await storageHubClient.issueStorageRequest(
+  const txHash: `0x${string}` | undefined = await storageHubClient.issueStorageRequest(
     bucketId as `0x${string}`,
     fileName,
     fingerprint.toHex() as `0x${string}`,
@@ -37,8 +37,12 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     mspId as `0x${string}`,
     multiaddresses,
     ReplicationLevel.Basic,
-    DEMO_CONFIG.replicas
+    0
   );
+  console.log('issueStorageRequest() txHash:', txHash);
+  if (!txHash) {
+    throw new Error('issueStorageRequest() did not return a transaction hash');
+  }
 
   // Wait for storage request transaction
   const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
@@ -68,7 +72,7 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   );
 
   // Upload file to MSP
-  const uploadReceipt = await mspClient.uploadFile(
+  const uploadReceipt = await mspClient.files.uploadFile(
     bucketId,
     fileKey.toHex(),
     await fileManager.getFileBlob(),
@@ -99,7 +103,7 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
 }
 
 export async function downloadFile(fileKey: H256, downloadPath: string): Promise<string> {
-  const downloadResponse = await mspClient.downloadByKey(fileKey.toHex());
+  const downloadResponse: DownloadResult = await mspClient.files.downloadFile(fileKey.toHex());
 
   if (downloadResponse.status !== 200) {
     throw new Error(`Download failed with status: ${downloadResponse.status}`);

@@ -6,6 +6,7 @@ export const NETWORKS: Record<string, ChainData> = {
     name: 'DataHaven Stagenet',
     rpcUrl: 'https://services.datahaven-dev.network/stagenet',
     wsUrl: 'wss://services.datahaven-dev.network/stagenet',
-    mspBaseUrl: 'https://sh-mspbackend.datahaven-kt.xyz/',
+    // mspBaseUrl: 'https://sh-mspbackend.datahaven-kt.xyz/',
+    mspBaseUrl: 'https://deo-dh-backend.stagenet.datahaven-infra.network/',
   },
 };

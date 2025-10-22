@@ -14,37 +14,39 @@ const main = async () => {
     await initWasm();
 
     // 1. Create Bucket
-    console.log('Creating bucket...');
+    console.log('- Creating bucket...');
     const { bucketId, txHash } = await createBucket(DEMO_CONFIG.bucketName);
-    console.log(`Bucket created: ${bucketId}`);
-    console.log(`   Transaction: ${txHash}\n`);
+    console.log(`- Bucket created: ${bucketId}`);
+    console.log(`- Transaction: ${txHash}\n`);
 
     // 2. Verify bucket exists on chain
     await verifyBucketCreation(bucketId);
-    console.log('Bucket verified on chain\n');
+    console.log('- Bucket verified on chain\n');
 
     // 3. Upload file
-    console.log('Uploading file...');
+    console.log('- Uploading file...');
     const { fileKey, uploadReceipt } = await uploadFile(bucketId, DEMO_CONFIG.filePath, DEMO_CONFIG.fileName);
-    console.log(`File uploaded: ${fileKey}`);
-    console.log(`   Status: ${uploadReceipt.status}\n`);
+    console.log(`- File uploaded: ${fileKey}`);
+    console.log(`- Status: ${uploadReceipt.status}\n`);
+
+    // throw new Error('TEMP custom stop');
 
     // 4. Download file
-    console.log('Downloading file...');
+    console.log('- Downloading file...');
     const downloadPath = await downloadFile(fileKey, DEMO_CONFIG.downloadPath);
-    console.log(`File downloaded to: ${downloadPath}\n`);
+    console.log(`- File downloaded to: ${downloadPath}\n`);
 
     // 5. Verify download
     const isValid = await verifyDownload(DEMO_CONFIG.filePath, downloadPath);
-    console.log(`File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}\n`);
+    console.log(`- File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}\n`);
 
-    console.log('Demo completed successfully!');
+    console.log('- Demo completed successfully!');
   } catch (error) {
-    console.error('Demo failed:', error);
+    console.error('- Demo failed:', error);
     throw error;
   } finally {
     await substrateApi.disconnect();
-    console.log('Disconnected from substrate API');
+    console.log('- Disconnected from substrate API');
   }
 };
 
