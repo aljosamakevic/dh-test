@@ -29,7 +29,7 @@ const main = async () => {
     console.log(`- File uploaded: ${fileKey}`);
     console.log(`- Status: ${uploadReceipt.status}\n`);
 
-    throw new Error('TEMP custom stop');
+    // throw new Error('TEMP custom stop');
 
     // 4. Download file
     console.log('- Downloading file...');

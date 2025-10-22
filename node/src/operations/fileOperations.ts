@@ -96,21 +96,6 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   }
 
   return { fileKey, uploadReceipt };
-
-  // Wait until the MSP has received and stored the file
-  //   const hexFileKey = fileKey.toHex();
-  //   TO ASK - is this step necessary? and if so what's the way to do it since .wait.fileStorageComplete doesn't exist
-  //   await mspClient.wait.fileStorageComplete(hexFileKey);
-
-  // TO ASK - .wait.mspResponseInTxPool doesn't exist either
-  //   await userApi.wait.mspResponseInTxPool(1);
-
-  // TO ASK - same with assert.eventPresent
-  //     const mspAcceptedStorageRequestEvent = await userApi.assert.eventPresent(
-  //     'fileSystem',
-  //     'MspAcceptedStorageRequest',
-  //   );
-  // ...
 }
 
 export async function downloadFile(fileKey: H256, downloadPath: string): Promise<string> {
@@ -129,20 +114,6 @@ export async function downloadFile(fileKey: H256, downloadPath: string): Promise
     writeStream.on('finish', () => resolve(downloadPath));
     writeStream.on('error', reject);
   });
-
-  //   const downloadFileBlob = await new Response(downloadResponse.stream).blob();
-
-  //   const isDownloadedFileTheSame =
-  //     Buffer.from(await downloadFileBlob.arrayBuffer()) ===
-  //     Buffer.from(await (await fileManager.getFileBlob()).arrayBuffer());
-  //   console.log('Is downloaded file the same as the uploaded one?', isDownloadedFileTheSame);
-
-  //   // Saving the downloaded file to verify it's correct
-  //   const downloadPath = new URL('../files/papermoon_logo_downloaded.jpeg', import.meta.url).pathname;
-  //   const writeStream = createWriteStream(downloadPath);
-  //   const readableStream = Readable.fromWeb(downloadResponse.stream as any);
-  //   readableStream.pipe(writeStream);
-  //   console.log('Downloaded file saved to:', downloadPath);
 }
 
 export async function verifyDownload(originalPath: string, downloadedPath: string): Promise<boolean> {
