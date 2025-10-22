@@ -29,7 +29,7 @@ const main = async () => {
     console.log(`- File uploaded: ${fileKey}`);
     console.log(`- Status: ${uploadReceipt.status}\n`);
 
-    // throw new Error('TEMP custom stop');
+    throw new Error('TEMP custom stop');
 
     // 4. Download file
     console.log('- Downloading file...');
@@ -40,7 +40,7 @@ const main = async () => {
     const isValid = await verifyDownload(DEMO_CONFIG.filePath, downloadPath);
     console.log(`- File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}\n`);
 
-    console.log('- Demo completed successfully!');
+    console.log('🚀  Demo completed successfully!');
   } catch (error) {
     console.error('- Demo failed:', error);
     throw error;

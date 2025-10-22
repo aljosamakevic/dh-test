@@ -4,7 +4,7 @@ import { FileManager, ReplicationLevel } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256, Hash } from '@polkadot/types/interfaces';
 import { storageHubClient, address, publicClient, substrateApi, account } from '../services/clientService.js';
-import { mspClient, getMspInfo } from '../services/mspService.js';
+import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
 import { DownloadResult } from '@storagehub-sdk/msp-client';
 
 export async function uploadFile(bucketId: string, filePath: string, fileName: string) {
@@ -24,9 +24,7 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   // Get MSP info
   const { mspId, multiaddresses } = await getMspInfo();
   // TO ASK Is this how I'm supposed to do this part?
-  //   const peerIds = (multiaddresses || [])
-  //   .map((addr: string) => addr.split("/p2p/").pop())
-  //   .filter(Boolean);
+  const peerIds = (multiaddresses || []).map((addr: string) => addr.split('/p2p/').pop()).filter(Boolean);
 
   // Issue storage request
   const txHash: `0x${string}` | undefined = await storageHubClient.issueStorageRequest(
@@ -70,6 +68,10 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     'Storage request fingerprint should be the same as initial fingerprint',
     storageRequestData.fingerprint.toString() === fingerprint.toString()
   );
+
+  // Authenticate bucket owner address with MSP prior to uploading file
+  const authProfile = await authenticateUser();
+  console.log('Authenticated user profile:', authProfile);
 
   // Upload file to MSP
   const uploadReceipt = await mspClient.files.uploadFile(

@@ -1,4 +1,12 @@
-import { HealthStatus, InfoResponse, MspClient, StatsResponse } from '@storagehub-sdk/msp-client';
+import {
+  AuthState,
+  AuthStatus,
+  HealthStatus,
+  InfoResponse,
+  MspClient,
+  StatsResponse,
+  UserInfo,
+} from '@storagehub-sdk/msp-client';
 import { NETWORKS } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
 import { address, walletClient } from './clientService.js';
@@ -35,26 +43,14 @@ const getMspStats = async (): Promise<StatsResponse> => {
 };
 
 // Authenticate user
-// const authenticateUser = async (): Promise<VerifyResponse> => {
-//   const { message } = await mspClient.auth.getNonce(address, NETWORKS.stagenet.id);
-//   // console.log('message', message);
-//   const signature = await walletClient.signMessage({
-//     message,
-//     account: address,
-//   });
-//   // console.log('signature', signature);
-//   const verified: VerifyResponse = await mspClient.verify(message, signature);
-//   // console.log('verified', verified);
-//   mspClient.setToken(verified.token);
-//   // console.log('Verified user', verified.user);
-//   return verified;
-// };
+const authenticateUser = async (): Promise<UserInfo> => {
+  const auth: AuthStatus = await mspClient.auth.getAuthStatus();
+  if (auth.status !== 'Authenticated') {
+    await mspClient.auth.SIWE(walletClient);
+  }
+  const profile: UserInfo = await mspClient.auth.getProfile();
 
-export {
-  mspClient,
-  getMspStats,
-  getMspInfo,
-  getMspHealth,
-  getValueProposition,
-  // , authenticateUser
+  return profile;
 };
+
+export { mspClient, getMspStats, getMspInfo, getMspHealth, getValueProposition, authenticateUser };
