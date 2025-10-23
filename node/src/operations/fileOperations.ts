@@ -90,8 +90,9 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     address,
     fileName
   );
+  console.log('File upload receipt:', uploadReceipt);
 
-  if (uploadReceipt.status !== 'success') {
+  if (uploadReceipt.status !== 'upload_successful') {
     throw new Error('File upload to MSP failed');
   }
 
