@@ -7,7 +7,6 @@ import { AccountId20, H256 } from '@polkadot/types/interfaces';
 import {
   Bucket,
   UploadReceipt,
-  VerifyResponse,
   type InfoResponse,
   type StatsResponse,
   type ValueProp,
@@ -20,6 +19,8 @@ import { storageHubClient, address, publicClient, account, substrateApi } from '
 
 const main = async () => {
   await initWasm();
+
+  throw new Error("WARNING don't run the indexFlat.ts script - it is outdated. Use index.ts instead until updated.");
 
   //   CREATE BUCKET
   // Derive bucket ID
