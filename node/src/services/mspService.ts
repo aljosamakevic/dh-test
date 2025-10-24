@@ -6,6 +6,7 @@ import {
   MspClient,
   StatsResponse,
   UserInfo,
+  ValueProp,
 } from '@storagehub-sdk/msp-client';
 import { NETWORKS } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
@@ -27,7 +28,7 @@ const getMspHealth = async (): Promise<HealthStatus> => {
 };
 
 const getValueProposition = async (): Promise<`0x${string}`> => {
-  const valueProps = await mspClient.info.getValuePropositions();
+  const valueProps: ValueProp[] = await mspClient.info.getValuePropositions();
   if (!Array.isArray(valueProps) || valueProps.length === 0) {
     throw new Error('No value propositions available from MSP');
   }
@@ -45,8 +46,10 @@ const getMspStats = async (): Promise<StatsResponse> => {
 // Authenticate user
 const authenticateUser = async (): Promise<UserInfo> => {
   const auth: AuthStatus = await mspClient.auth.getAuthStatus();
+  console.log('MSP Auth Status:', auth.status);
   if (auth.status !== 'Authenticated') {
     await mspClient.auth.SIWE(walletClient);
+    console.log('User authenticated with MSP via SIWE');
   }
   const profile: UserInfo = await mspClient.auth.getProfile();
 

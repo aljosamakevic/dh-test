@@ -43,8 +43,8 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     fileSizeBigInt,
     mspId as `0x${string}`,
     peerIds,
-    ReplicationLevel.Basic,
-    0
+    ReplicationLevel.Custom,
+    1
   );
   console.log('issueStorageRequest() txHash:', txHash);
   if (!txHash) {

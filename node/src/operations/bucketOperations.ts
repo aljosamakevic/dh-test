@@ -36,6 +36,7 @@ export async function createBucket(bucketName: string) {
 
   // Wait for transaction
   const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  console.log('Bucket creation receipt:', receipt);
   if (receipt.status !== 'success') {
     throw new Error(`Bucket creation failed: ${txHash}`);
   }
@@ -53,6 +54,7 @@ export async function verifyBucketCreation(bucketId: string) {
 
   const bucketData = bucket.unwrap();
   console.log('Bucket data:', bucketData);
+  console.log('Bucket userId matches initial bucket owner address', bucketData.userId.toString() === address);
   console.log(`Bucket MSPId matches initial MSPId: ${bucketData.mspId.toString() === mspId}`);
   return bucketData;
 }
