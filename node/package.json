@@ -18,18 +18,18 @@
   "dependencies": {
     "0g": "^0.4.2",
     "@polkadot/api": "^16.4.9",
-    "@storagehub-sdk/core": "^0.2.0",
-    "@storagehub-sdk/msp-client": "^0.2.0",
+    "@storagehub-sdk/core": "^0.3.0",
+    "@storagehub-sdk/msp-client": "^0.3.0",
     "@storagehub/api-augment": "^0.2.8",
     "@storagehub/types-bundle": "^0.2.7",
     "dotenv": "^17.2.3",
     "ethers": "^6.15.0",
-    "pnpm": "^10.19.0",
+    "pnpm": "^10.20.0",
     "viem": "2.38.3"
   },
   "devDependencies": {
     "@polkadot/types": "^16.4.9",
-    "@types/node": "^24.9.1",
+    "@types/node": "^24.10.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
