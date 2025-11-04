@@ -12,7 +12,7 @@ import { NETWORKS } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
 import { address, walletClient } from './clientService.js';
 
-const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.stagenet.mspBaseUrl };
+const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.stagenet.mspUrl };
 const mspClient = await MspClient.connect(httpCfg);
 
 const getMspInfo = async (): Promise<InfoResponse> => {
