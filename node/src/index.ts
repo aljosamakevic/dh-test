@@ -3,8 +3,8 @@ import '@storagehub/api-augment';
 import { initWasm } from '@storagehub-sdk/core';
 import { substrateApi } from './services/clientService.js';
 import { DEMO_CONFIG } from './config/demoConfig.js';
-import { createBucket, verifyBucketCreation } from './operations/bucketOperations.js';
-import { uploadFile, downloadFile, verifyDownload } from './operations/fileOperations.js';
+import { createBucket, deleteBucket, verifyBucketCreation } from './operations/bucketOperations.js';
+import { uploadFile, downloadFile, verifyDownload, deleteFile } from './operations/fileOperations.js';
 
 const main = async () => {
   console.log('🚀 Starting DataHaven Storage Demo...\n');
@@ -39,6 +39,15 @@ const main = async () => {
     // 5. Verify download
     const isValid = await verifyDownload(DEMO_CONFIG.filePath, downloadPath);
     console.log(`- File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}\n`);
+
+    // 6. Delete file and bucket (optional)
+    console.log('- Deleting file...');
+    await deleteFile(bucketId, fileKey);
+    console.log('- File deleted from network\n');
+
+    console.log('- Deleting bucket...');
+    await deleteBucket(bucketId);
+    console.log('- Bucket deleted from network\n');
 
     console.log('🚀  Demo completed successfully!');
   } catch (error) {

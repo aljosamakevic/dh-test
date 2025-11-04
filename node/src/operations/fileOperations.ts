@@ -123,3 +123,17 @@ export async function verifyDownload(originalPath: string, downloadedPath: strin
 
   return originalBuffer.equals(downloadedBuffer);
 }
+
+export async function deleteFile(bucketId: string, fileKey: H256) {
+  // Request file deletion
+  const txHash: `0x${string}` = await storageHubClient.requestDeleteFile(bucketId as `0x${string}`, fileKey.toHex());
+  console.log('deleteFile() txHash:', txHash);
+
+  // Wait for delete file transaction receipt
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  if (receipt.status !== 'success') {
+    throw new Error(`File deletion failed: ${txHash}`);
+  }
+
+  console.log(`File with key ${fileKey.toHex()} deleted successfully from bucket ${bucketId}`);
+}

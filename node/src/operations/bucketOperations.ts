@@ -58,3 +58,18 @@ export async function verifyBucketCreation(bucketId: string) {
   console.log(`Bucket MSPId matches initial MSPId: ${bucketData.mspId.toString() === mspId}`);
   return bucketData;
 }
+
+export async function deleteBucket(bucketId: string) {
+  const txHash: `0x${string}` | undefined = await storageHubClient.deleteBucket(bucketId as `0x${string}`);
+  console.log('deleteBucket() txHash:', txHash);
+  if (!txHash) {
+    throw new Error('deleteBucket() did not return a transaction hash');
+  }
+
+  // Wait for transaction
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  console.log('Bucket deletion receipt:', receipt);
+  if (receipt.status !== 'success') {
+    throw new Error(`Bucket deletion failed: ${txHash}`);
+  }
+}

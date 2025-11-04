@@ -6,7 +6,6 @@ import { address, walletClient } from './clientService.js';
 const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.testnet.mspUrl };
 const sessionProvider = async () =>
   sessionToken ? ({ token: sessionToken, user: { address: address } } as const) : undefined;
-
 const mspClient = await MspClient.connect(httpCfg, sessionProvider);
 let sessionToken: string | undefined = undefined;
 
