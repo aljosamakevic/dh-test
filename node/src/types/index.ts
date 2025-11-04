@@ -3,5 +3,5 @@ export type ChainData = {
   name: string;
   rpcUrl: string;
   wsUrl: string;
-  mspBaseUrl: string;
+  mspUrl: string;
 };

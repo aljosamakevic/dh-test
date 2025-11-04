@@ -1,19 +1,14 @@
-import {
-  AuthState,
-  AuthStatus,
-  HealthStatus,
-  InfoResponse,
-  MspClient,
-  StatsResponse,
-  UserInfo,
-  ValueProp,
-} from '@storagehub-sdk/msp-client';
+import { HealthStatus, InfoResponse, MspClient, StatsResponse, UserInfo, ValueProp } from '@storagehub-sdk/msp-client';
 import { NETWORKS } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
 import { address, walletClient } from './clientService.js';
 
-const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.stagenet.mspBaseUrl };
-const mspClient = await MspClient.connect(httpCfg);
+const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.testnet.mspUrl };
+const sessionProvider = async () =>
+  sessionToken ? ({ token: sessionToken, user: { address: address } } as const) : undefined;
+
+const mspClient = await MspClient.connect(httpCfg, sessionProvider);
+let sessionToken: string | undefined = undefined;
 
 const getMspInfo = async (): Promise<InfoResponse> => {
   const mspInfo = await mspClient.info.getInfo();
@@ -45,15 +40,14 @@ const getMspStats = async (): Promise<StatsResponse> => {
 
 // Authenticate user
 const authenticateUser = async (): Promise<UserInfo> => {
-  const auth: AuthStatus = await mspClient.auth.getAuthStatus();
-  console.log('MSP Auth Status:', auth.status);
-  if (auth.status !== 'Authenticated') {
-    await mspClient.auth.SIWE(walletClient);
-    console.log('User authenticated with MSP via SIWE');
-  }
+  const siweSession = await mspClient.auth.SIWE(walletClient);
+  console.log('SIWE Session:', siweSession);
+  sessionToken = (siweSession as { token: string }).token;
+  console.log('User authenticated with MSP via SIWE');
+
   const profile: UserInfo = await mspClient.auth.getProfile();
 
   return profile;
 };
 
-export { mspClient, getMspStats, getMspInfo, getMspHealth, getValueProposition, authenticateUser };
+export { mspClient, getMspStats, getMspInfo, getMspHealth, getValueProposition, authenticateUser, sessionProvider };

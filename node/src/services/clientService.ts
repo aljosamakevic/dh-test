@@ -14,24 +14,24 @@ const address = account.address;
 const walletClient: WalletClient = createWalletClient({
   chain,
   account,
-  transport: http(NETWORKS.stagenet.rpcUrl),
+  transport: http(NETWORKS.testnet.rpcUrl),
 });
 
 const publicClient: PublicClient = createPublicClient({
   chain,
-  transport: http(NETWORKS.stagenet.rpcUrl),
+  transport: http(NETWORKS.testnet.rpcUrl),
 });
 
 // Create StorageHub client
 const storageHubClient: StorageHubClient = new StorageHubClient({
-  rpcUrl: NETWORKS.stagenet.rpcUrl,
+  rpcUrl: NETWORKS.testnet.rpcUrl,
   chain: chain,
   walletClient: walletClient,
   filesystemContractAddress: config.filesystemContractAddress,
 });
 
 // Create Polkadot API client
-const provider = new WsProvider(NETWORKS.stagenet.wsUrl);
+const provider = new WsProvider(NETWORKS.testnet.wsUrl);
 const substrateApi: ApiPromise = await ApiPromise.create({
   provider,
   typesBundle: types,
