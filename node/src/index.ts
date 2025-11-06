@@ -5,6 +5,7 @@ import { substrateApi } from './services/clientService.js';
 import { DEMO_CONFIG } from './config/demoConfig.js';
 import { createBucket, deleteBucket, verifyBucketCreation } from './operations/bucketOperations.js';
 import { uploadFile, downloadFile, verifyDownload, deleteFile } from './operations/fileOperations.js';
+import { getBucketList } from './services/mspService.js';
 
 const main = async () => {
   console.log('🚀 Starting DataHaven Storage Demo...\n');
@@ -40,14 +41,17 @@ const main = async () => {
     const isValid = await verifyDownload(DEMO_CONFIG.filePath, downloadPath);
     console.log(`- File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}\n`);
 
-    // 6. Delete file and bucket (optional)
-    console.log('- Deleting file...');
-    await deleteFile(bucketId, fileKey);
-    console.log('- File deleted from network\n');
+    // Bonus: List existing buckets
+    // const bucketList = await getBucketList();
 
-    console.log('- Deleting bucket...');
-    await deleteBucket(bucketId);
-    console.log('- Bucket deleted from network\n');
+    // 6. Delete file and bucket (optional)
+    // console.log('- Deleting file...');
+    // await deleteFile(bucketId, fileKey);
+    // console.log('- File deleted from network\n');
+
+    // console.log('- Deleting bucket...');
+    // await deleteBucket(bucketId);
+    // console.log('- Bucket deleted from network\n');
 
     console.log('🚀  Demo completed successfully!');
   } catch (error) {

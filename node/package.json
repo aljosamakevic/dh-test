@@ -18,14 +18,14 @@
   "dependencies": {
     "0g": "^0.4.2",
     "@polkadot/api": "^16.4.9",
-    "@storagehub-sdk/core": "^0.3.0",
-    "@storagehub-sdk/msp-client": "^0.3.0",
+    "@storagehub-sdk/core": "^0.3.1",
+    "@storagehub-sdk/msp-client": "^0.3.1",
     "@storagehub/api-augment": "^0.2.8",
     "@storagehub/types-bundle": "^0.2.7",
     "dotenv": "^17.2.3",
     "ethers": "^6.15.0",
     "pnpm": "^10.20.0",
-    "viem": "2.38.3"
+    "viem": "2.38.6"
   },
   "devDependencies": {
     "@polkadot/types": "^16.4.9",

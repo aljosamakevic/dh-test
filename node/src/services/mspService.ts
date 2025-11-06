@@ -1,4 +1,12 @@
-import { HealthStatus, InfoResponse, MspClient, StatsResponse, UserInfo, ValueProp } from '@storagehub-sdk/msp-client';
+import {
+  Bucket,
+  HealthStatus,
+  InfoResponse,
+  MspClient,
+  StatsResponse,
+  UserInfo,
+  ValueProp,
+} from '@storagehub-sdk/msp-client';
 import { NETWORKS } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
 import { address, walletClient } from './clientService.js';
@@ -39,14 +47,33 @@ const getMspStats = async (): Promise<StatsResponse> => {
 
 // Authenticate user
 const authenticateUser = async (): Promise<UserInfo> => {
+  // if (!sessionToken) {
+  console.log('Authenticating user with MSP via SIWE...');
   const siweSession = await mspClient.auth.SIWE(walletClient);
   console.log('SIWE Session:', siweSession);
   sessionToken = (siweSession as { token: string }).token;
-  console.log('User authenticated with MSP via SIWE');
+  // } else {
+  //   console.log('User already authenticated with MSP via SIWE');
+  // }
 
   const profile: UserInfo = await mspClient.auth.getProfile();
 
   return profile;
 };
 
-export { mspClient, getMspStats, getMspInfo, getMspHealth, getValueProposition, authenticateUser, sessionProvider };
+const getBucketList = async (): Promise<Bucket[]> => {
+  const bucketList: Bucket[] = await mspClient.buckets.listBuckets();
+  console.log(`MSP Buckets List: ${JSON.stringify(bucketList, null, 2)}`);
+  return bucketList;
+};
+
+export {
+  mspClient,
+  getMspStats,
+  getMspInfo,
+  getMspHealth,
+  getValueProposition,
+  authenticateUser,
+  sessionProvider,
+  getBucketList,
+};
