@@ -81,6 +81,11 @@ async function run() {
 
   // **PLACEHOLDER FOR STEP 2: GET PROFILE INFO FROM MSP**
 
+  const bucketInfo = await mspClient.buckets.getBucket(
+    '0xcfdf0149a7d862a491e95ed87258c7182120aba1bf0e15591775e41058753c34'
+  );
+  console.log('Bucket Info:', bucketInfo);
+
   // Retrieve and log the authenticated user's profile.
   // This includes wallet address and, if available, ENS name
   const profile: UserInfo = await mspClient.auth.getProfile();

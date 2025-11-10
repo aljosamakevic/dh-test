@@ -72,7 +72,7 @@ async function run() {
 
   // --- File Manager setup ---
   const ownerAccount = '0x00fa35d84a43db75467d2b2c1ed8974aca57223e';
-  const bucketId = '0xdd2148ff63c15826ab42953a9d214770e6c2a73b22b83d28819a1777ab9d1322';
+  const bucketId = '0x781a6197f74f9d747b0c08933decbac1a81d6620a6c2f16d9e3b13c84ae44cc8';
   const fileKey = '0x8345bdd406fd9df119757b77c84e16a2e304276372dc21cb37a69a471ee093a6';
   const fileName = 'helloworld.txt'; // Example: filename.jpeg
 

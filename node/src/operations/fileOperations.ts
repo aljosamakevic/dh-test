@@ -96,6 +96,10 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     throw new Error('File upload to MSP failed');
   }
 
+  // TEMPORARY: Fetch and log bucket info after file upload
+  const bucketInfo = await mspClient.buckets.getBucket(bucketId);
+  console.log('Bucket Info:', bucketInfo);
+
   return { fileKey, uploadReceipt };
 }
 
