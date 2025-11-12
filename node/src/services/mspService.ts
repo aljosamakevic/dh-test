@@ -7,11 +7,11 @@ import {
   UserInfo,
   ValueProp,
 } from '@storagehub-sdk/msp-client';
-import { NETWORKS } from '../config/networks.js';
+import { chosenNetwork } from '../config/networks.js';
 import { HttpClientConfig } from '@storagehub-sdk/core';
 import { address, walletClient } from './clientService.js';
 
-const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.testnet.mspUrl };
+const httpCfg: HttpClientConfig = { baseUrl: chosenNetwork.mspUrl };
 const sessionProvider = async () =>
   sessionToken ? ({ token: sessionToken, user: { address: address } } as const) : undefined;
 const mspClient = await MspClient.connect(httpCfg, sessionProvider);
@@ -48,14 +48,10 @@ const getMspStats = async (): Promise<StatsResponse> => {
 
 // Authenticate user
 const authenticateUser = async (): Promise<UserInfo> => {
-  // if (!sessionToken) {
   console.log('Authenticating user with MSP via SIWE...');
   const siweSession = await mspClient.auth.SIWE(walletClient);
   console.log('SIWE Session:', siweSession);
   sessionToken = (siweSession as { token: string }).token;
-  // } else {
-  //   console.log('User already authenticated with MSP via SIWE');
-  // }
 
   const profile: UserInfo = await mspClient.auth.getProfile();
 

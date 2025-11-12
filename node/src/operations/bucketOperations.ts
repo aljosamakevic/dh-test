@@ -22,26 +22,28 @@ export async function createBucket(bucketName: string) {
     throw new Error(`Bucket already exists: ${bucketId}`);
   }
 
+  const isPrivate = false;
+
   // Create bucket on chain
   const txHash: `0x${string}` | undefined = await storageHubClient.createBucket(
     mspId as `0x${string}`,
     bucketName,
-    false,
+    isPrivate,
     valuePropId
   );
+
   console.log('createBucket() txHash:', txHash);
   if (!txHash) {
     throw new Error('createBucket() did not return a transaction hash');
   }
 
   // Wait for transaction
-  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-  console.log('Bucket creation receipt:', receipt);
-  if (receipt.status !== 'success') {
+  const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  if (txReceipt.status !== 'success') {
     throw new Error(`Bucket creation failed: ${txHash}`);
   }
 
-  return { bucketId, txHash };
+  return { bucketId, txReceipt };
 }
 
 export async function verifyBucketCreation(bucketId: string) {

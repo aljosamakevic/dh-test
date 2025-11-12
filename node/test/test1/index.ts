@@ -7,7 +7,7 @@ import { HealthStatus, InfoResponse, MspClient, ValueProp } from '@storagehub-sd
 import { Chain, PublicClient, WalletClient, createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
-import { config } from '../config/environment.js';
+import { config } from '../../src/config/environment.js';
 // --8<-- [end:imports]
 
 async function run() {

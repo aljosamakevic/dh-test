@@ -1,11 +1,12 @@
 import { createReadStream, createWriteStream, statSync } from 'node:fs';
 import { Readable } from 'node:stream';
-import { FileManager, ReplicationLevel } from '@storagehub-sdk/core';
+import { FileManager } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
-import { AccountId20, H256, Hash } from '@polkadot/types/interfaces';
+import { AccountId20, H256 } from '@polkadot/types/interfaces';
 import { storageHubClient, address, publicClient, polkadotApi, account } from '../services/clientService.js';
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
 import { DownloadResult } from '@storagehub-sdk/msp-client';
+import { DEMO_CONFIG } from '../config/demoConfig.js';
 
 function extractPeerIDs(multiaddresses: string[]): string[] {
   return (multiaddresses ?? []).map((addr) => addr.split('/p2p/').pop()).filter((id): id is string => !!id);
@@ -43,8 +44,8 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     fileSizeBigInt,
     mspId as `0x${string}`,
     peerIds,
-    ReplicationLevel.Custom,
-    1
+    DEMO_CONFIG.replicationLevel,
+    DEMO_CONFIG.replicas
   );
   console.log('issueStorageRequest() txHash:', txHash);
   if (!txHash) {

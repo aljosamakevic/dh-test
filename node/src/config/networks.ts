@@ -2,7 +2,7 @@ import { type ChainData } from '../types/index.js';
 
 export const NETWORKS: Record<string, ChainData> = {
   stagenet: {
-    id: 1283,
+    id: 55932,
     name: 'DataHaven Stagenet',
     rpcUrl: 'https://services.datahaven-dev.network/stagenet',
     wsUrl: 'wss://services.datahaven-dev.network/stagenet',
@@ -26,3 +26,5 @@ export const NETWORKS: Record<string, ChainData> = {
     nativeCurrency: { name: 'StorageHub', symbol: 'SH', decimals: 18 },
   },
 };
+
+export const chosenNetwork = NETWORKS.stagenet;

@@ -7,7 +7,7 @@ import { HealthStatus, MspClient, FileInfo } from '@storagehub-sdk/msp-client';
 import { Chain, PublicClient, WalletClient, createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
-import { config } from '../config/environment.js';
+import { config } from '../../src/config/environment.js';
 
 // --8<-- [end:imports]
 
@@ -89,8 +89,8 @@ async function run() {
 
   // --8<-- [start:request-file-deletion]
 
-  const bucketId = '0x659ca967940ee656b10ea85813bb14f054137d330ec87f9914a2c46a981196f6';
-  const fileKey = '0x924f4430c11e3a6d6a0c38c9538fb15e5887194e1d49062e3978444df077a610';
+  const bucketId = '0xcad64601dd0cffe1488a5c38263a6300fc97c675b78f6de7fac57fe2e967752f';
+  const fileKey = '0xb360f5286c4892172d222236b9986e235077762fffe4b346e74bd6a3fdbdf6f4';
 
   // Get file info before deletion
   const fileInfo: FileInfo = await mspClient.files.getFileInfo(bucketId, fileKey);

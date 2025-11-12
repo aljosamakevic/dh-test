@@ -6,7 +6,7 @@ import { types } from '@storagehub/types-bundle';
 
 import { config } from '../config/environment.js';
 import { chain } from '../config/chain.js';
-import { NETWORKS } from '../config/networks.js';
+import { chosenNetwork } from '../config/networks.js';
 
 const account = privateKeyToAccount(config.privateKey as `0x${string}`);
 const address = account.address;
@@ -14,24 +14,24 @@ const address = account.address;
 const walletClient: WalletClient = createWalletClient({
   chain,
   account,
-  transport: http(NETWORKS.testnet.rpcUrl),
+  transport: http(chosenNetwork.rpcUrl),
 });
 
 const publicClient: PublicClient = createPublicClient({
   chain,
-  transport: http(NETWORKS.testnet.rpcUrl),
+  transport: http(chosenNetwork.rpcUrl),
 });
 
 // Create StorageHub client
 const storageHubClient: StorageHubClient = new StorageHubClient({
-  rpcUrl: NETWORKS.testnet.rpcUrl,
+  rpcUrl: chosenNetwork.rpcUrl,
   chain: chain,
   walletClient: walletClient,
   filesystemContractAddress: config.filesystemContractAddress,
 });
 
 // Create Polkadot API client
-const provider = new WsProvider(NETWORKS.testnet.wsUrl);
+const provider = new WsProvider(chosenNetwork.wsUrl);
 const polkadotApi: ApiPromise = await ApiPromise.create({
   provider,
   typesBundle: types,

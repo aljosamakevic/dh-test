@@ -8,8 +8,8 @@ import { Readable } from 'node:stream';
 import { Chain, PublicClient, WalletClient, createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
-import { config } from '../config/environment.js';
-import { address } from '../services/clientService.js';
+import { config } from '../../src/config/environment.js';
+import { address } from '../../src/services/clientService.js';
 
 async function run() {
   // For anything from @storagehub-sdk/core to work, initWasm() is required
