@@ -3,7 +3,7 @@ import { Readable } from 'node:stream';
 import { FileManager, ReplicationLevel } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256, Hash } from '@polkadot/types/interfaces';
-import { storageHubClient, address, publicClient, substrateApi, account } from '../services/clientService.js';
+import { storageHubClient, address, publicClient, polkadotApi, account } from '../services/clientService.js';
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
 import { DownloadResult } from '@storagehub-sdk/msp-client';
 
@@ -64,7 +64,7 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   const fileKey = await fileManager.computeFileKey(owner, bucketIdH256, fileName);
 
   // Verify storage request on chain
-  const storageRequest = await substrateApi.query.fileSystem.storageRequests(fileKey);
+  const storageRequest = await polkadotApi.query.fileSystem.storageRequests(fileKey);
   if (!storageRequest.isSome) {
     throw new Error('Storage request not found on chain');
   }
@@ -96,9 +96,9 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     throw new Error('File upload to MSP failed');
   }
 
-  // TEMPORARY: Fetch and log bucket info after file upload
-  const bucketInfo = await mspClient.buckets.getBucket(bucketId);
-  console.log('Bucket Info:', bucketInfo);
+  // // TEMPORARY: Fetch and log bucket info after file upload
+  // const bucketInfo = await mspClient.buckets.getBucket(bucketId);
+  // console.log('Bucket Info:', bucketInfo);
 
   return { fileKey, uploadReceipt };
 }

@@ -4,6 +4,6 @@ import { NETWORKS } from './networks.js';
 export const chain: Chain = defineChain({
   id: NETWORKS.testnet.id,
   name: NETWORKS.testnet.name,
-  nativeCurrency: { name: 'Have', symbol: 'HAVE', decimals: 18 },
+  nativeCurrency: NETWORKS.testnet.nativeCurrency,
   rpcUrls: { default: { http: [NETWORKS.testnet.rpcUrl] } },
 });

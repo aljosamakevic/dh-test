@@ -29,13 +29,14 @@ const getMspHealth = async (): Promise<HealthStatus> => {
   return mspHealth;
 };
 
-const getValueProposition = async (): Promise<`0x${string}`> => {
+const getValueProps = async (): Promise<`0x${string}`> => {
   const valueProps: ValueProp[] = await mspClient.info.getValuePropositions();
   if (!Array.isArray(valueProps) || valueProps.length === 0) {
     throw new Error('No value propositions available from MSP');
   }
+  // For simplicity, select the first value proposition and return its ID
   const valuePropId = valueProps[0].id as `0x${string}`;
-  // console.log(`Value Prop ID: ${valuePropId}`);
+  console.log(`Chose Value Prop ID: ${valuePropId}`);
   return valuePropId;
 };
 
@@ -72,7 +73,7 @@ export {
   getMspStats,
   getMspInfo,
   getMspHealth,
-  getValueProposition,
+  getValueProps,
   authenticateUser,
   sessionProvider,
   getBucketList,

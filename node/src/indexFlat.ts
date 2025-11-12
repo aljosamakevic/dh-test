@@ -15,7 +15,7 @@ import {
 import { Readable } from 'node:stream';
 
 import { mspClient } from './services/mspService.js';
-import { storageHubClient, address, publicClient, account, substrateApi } from './services/clientService.js';
+import { storageHubClient, address, publicClient, account, polkadotApi } from './services/clientService.js';
 
 const main = async () => {
   await initWasm();
@@ -28,7 +28,7 @@ const main = async () => {
   const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
   console.log('Derived bucket Id: ', bucketId);
   // Check that the bucket doesn't exist yet
-  const bucketBeforeCreation = await substrateApi.query.providers.buckets(bucketId);
+  const bucketBeforeCreation = await polkadotApi.query.providers.buckets(bucketId);
   console.log('Bucket before creation is empty', bucketBeforeCreation.isEmpty);
 
   // Get MSP info
@@ -38,7 +38,7 @@ const main = async () => {
   console.log('MSP id:', mspId);
 
   //   get MSP Value props
-  const valueProps: ValueProp[] = await mspClient.getValuePropositions();
+  const valueProps: ValueProp[] = await mspClient.getValueProps();
   if (!Array.isArray(valueProps) || valueProps.length === 0) {
     throw new Error('No value props availabile from this MSP.');
   }
@@ -57,7 +57,7 @@ const main = async () => {
   console.log('Bucket created receipt:', receiptBucket);
 
   // Check that the bucket now exists on chain
-  const bucketAfterCreation = await substrateApi.query.providers.buckets(bucketId);
+  const bucketAfterCreation = await polkadotApi.query.providers.buckets(bucketId);
   console.log('Bucket after creation exists', !bucketAfterCreation.isEmpty);
 
   const bucketData = bucketAfterCreation.unwrap();
@@ -114,7 +114,7 @@ const main = async () => {
   const fileKey: H256 = await fileManager.computeFileKey(owner, bucketIdH256, fileLocation);
 
   // Check that the storage request exists on chain
-  const storageRequest = await substrateApi.query.fileSystem.storageRequests(fileKey);
+  const storageRequest = await polkadotApi.query.fileSystem.storageRequests(fileKey);
   if (!storageRequest.isSome) {
     throw new Error('Storage request not found on chain');
   }
@@ -177,7 +177,7 @@ const main = async () => {
   readableStream.pipe(writeStream);
   console.log('Downloaded file saved to:', downloadPath);
 
-  await substrateApi.disconnect();
+  await polkadotApi.disconnect();
 };
 
 main().catch((e) => {

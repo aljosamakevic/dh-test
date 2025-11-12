@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import '@storagehub/api-augment';
 import { initWasm } from '@storagehub-sdk/core';
-import { substrateApi } from './services/clientService.js';
+import { polkadotApi } from './services/clientService.js';
 import { DEMO_CONFIG } from './config/demoConfig.js';
 import { createBucket, deleteBucket, verifyBucketCreation } from './operations/bucketOperations.js';
 import { uploadFile, downloadFile, verifyDownload, deleteFile } from './operations/fileOperations.js';
@@ -58,7 +58,7 @@ const main = async () => {
     console.error('- Demo failed:', error);
     throw error;
   } finally {
-    await substrateApi.disconnect();
+    await polkadotApi.disconnect();
     console.log('- Disconnected from substrate API');
   }
 };

@@ -4,4 +4,9 @@ export type ChainData = {
   rpcUrl: string;
   wsUrl: string;
   mspUrl: string;
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
 };

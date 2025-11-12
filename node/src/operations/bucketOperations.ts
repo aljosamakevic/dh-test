@@ -1,12 +1,12 @@
-import { storageHubClient, address, publicClient, substrateApi } from '../services/clientService.js';
-import { getMspHealth, getMspInfo, getValueProposition } from '../services/mspService.js';
+import { storageHubClient, address, publicClient, polkadotApi } from '../services/clientService.js';
+import { getMspHealth, getMspInfo, getValueProps } from '../services/mspService.js';
 
 export async function createBucket(bucketName: string) {
   // Get MSP info and value proposition
   const { mspId } = await getMspInfo();
   //   const mspInfo = await getMspInfo();
   //   console.log('MSP Info:', mspInfo);
-  const valuePropId = await getValueProposition();
+  const valuePropId = await getValueProps();
   console.log(`Value Prop ID: ${valuePropId}`);
   const health = await getMspHealth();
   console.log('MSP Health Status:', health);
@@ -16,7 +16,7 @@ export async function createBucket(bucketName: string) {
   console.log(`Derived bucket ID: ${bucketId}`);
 
   // Check that the bucket doesn't exist yet
-  const bucketBeforeCreation = await substrateApi.query.providers.buckets(bucketId);
+  const bucketBeforeCreation = await polkadotApi.query.providers.buckets(bucketId);
   console.log('Bucket before creation is empty', bucketBeforeCreation.isEmpty);
   if (!bucketBeforeCreation.isEmpty) {
     throw new Error(`Bucket already exists: ${bucketId}`);
@@ -47,7 +47,7 @@ export async function createBucket(bucketName: string) {
 export async function verifyBucketCreation(bucketId: string) {
   const { mspId } = await getMspInfo();
 
-  const bucket = await substrateApi.query.providers.buckets(bucketId);
+  const bucket = await polkadotApi.query.providers.buckets(bucketId);
   if (bucket.isEmpty) {
     throw new Error('Bucket not found on chain after creation');
   }

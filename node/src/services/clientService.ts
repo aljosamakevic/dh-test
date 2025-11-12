@@ -32,10 +32,10 @@ const storageHubClient: StorageHubClient = new StorageHubClient({
 
 // Create Polkadot API client
 const provider = new WsProvider(NETWORKS.testnet.wsUrl);
-const substrateApi: ApiPromise = await ApiPromise.create({
+const polkadotApi: ApiPromise = await ApiPromise.create({
   provider,
   typesBundle: types,
   noInitWarn: true,
 });
 
-export { account, address, publicClient, walletClient, storageHubClient, substrateApi };
+export { account, address, publicClient, walletClient, storageHubClient, polkadotApi };
