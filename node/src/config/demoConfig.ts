@@ -1,7 +1,7 @@
 import { ReplicationLevel } from '@storagehub-sdk/core';
 
 export const DEMO_CONFIG = {
-  bucketName: 'bucket-014',
+  bucketName: 'bucket-015',
   // fileName: 'papermoon_logo.jpeg',
   fileName: 'helloworld.txt',
   filePath: new URL(`../files/helloworld.txt`, import.meta.url).pathname,
