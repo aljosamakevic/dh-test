@@ -8,8 +8,6 @@ export async function createBucket(bucketName: string) {
   //   console.log('MSP Info:', mspInfo);
   const valuePropId = await getValueProps();
   console.log(`Value Prop ID: ${valuePropId}`);
-  const health = await getMspHealth();
-  console.log('MSP Health Status:', health);
 
   // Derive bucket ID
   const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
@@ -55,7 +53,6 @@ export async function verifyBucketCreation(bucketId: string) {
   }
 
   const bucketData = bucket.unwrap();
-  console.log('Bucket data:', bucketData);
   console.log('Bucket userId matches initial bucket owner address', bucketData.userId.toString() === address);
   console.log(`Bucket MSPId matches initial MSPId: ${bucketData.mspId.toString() === mspId}`);
   return bucketData;

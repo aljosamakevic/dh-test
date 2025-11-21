@@ -1,12 +1,13 @@
 import { type ChainData } from '../types/index.js';
+import { config } from './environment.js';
 
 export const NETWORKS: Record<string, ChainData> = {
   stagenet: {
     id: 55932,
     name: 'DataHaven Stagenet',
-    rpcUrl: 'https://services.datahaven-dev.network/stagenet',
-    wsUrl: 'wss://services.datahaven-dev.network/stagenet',
-    mspUrl: 'https://deo-dh-backend.stagenet.datahaven-infra.network/',
+    rpcUrl: config.stagenet.rpcUrl,
+    wsUrl: config.stagenet.wsUrl,
+    mspUrl: config.stagenet.mspUrl,
     nativeCurrency: { name: 'Stage', symbol: 'STAGE', decimals: 18 },
   },
   testnet: {
@@ -27,4 +28,4 @@ export const NETWORKS: Record<string, ChainData> = {
   },
 };
 
-export const chosenNetwork = NETWORKS.testnet;
+export const chosenNetwork = NETWORKS.devnet;
