@@ -8,7 +8,7 @@ import { config } from '../config/environment.js';
 import { chain } from '../config/chain.js';
 import { chosenNetwork } from '../config/networks.js';
 
-const account = privateKeyToAccount(config.alithPrivateKey as `0x${string}`);
+const account = privateKeyToAccount(config.privateKey as `0x${string}`);
 const address = account.address;
 
 const walletClient: WalletClient = createWalletClient({

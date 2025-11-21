@@ -102,38 +102,38 @@ async function run() {
   console.log('Formatted file info for deletion:', formattedFileInfo);
 
   // Request file deletion
-  // const txHashRequestDeleteFile: `0x${string}` = await storageHubClient.requestDeleteFile(formattedFileInfo);
-  // console.log('requestDeleteFile() txHash:', txHashRequestDeleteFile);
+  const txHashRequestDeleteFile: `0x${string}` = await storageHubClient.requestDeleteFile(formattedFileInfo);
+  console.log('requestDeleteFile() txHash:', txHashRequestDeleteFile);
 
-  // // Wait for delete file transaction receipt
-  // const receiptRequestDeleteFile = await publicClient.waitForTransactionReceipt({
-  //   hash: txHashRequestDeleteFile,
-  // });
-  // console.log('File deletion receipt:', receiptRequestDeleteFile);
-  // if (receiptRequestDeleteFile.status !== 'success') {
-  //   throw new Error(`File deletion failed: ${txHashRequestDeleteFile}`);
-  // }
+  // Wait for delete file transaction receipt
+  const receiptRequestDeleteFile = await publicClient.waitForTransactionReceipt({
+    hash: txHashRequestDeleteFile,
+  });
+  console.log('File deletion receipt:', receiptRequestDeleteFile);
+  if (receiptRequestDeleteFile.status !== 'success') {
+    throw new Error(`File deletion failed: ${txHashRequestDeleteFile}`);
+  }
 
-  // console.log(`File with key ${fileKey} deleted successfully from bucket ${bucketId}`);
+  console.log(`File with key ${fileKey} deleted successfully from bucket ${bucketId}`);
   // --8<-- [end:request-file-deletion]
 
   //  --8<-- [start:delete-bucket]
 
   // Delete bucket
-  // const txHashDeleteBucket: `0x${string}` | undefined = await storageHubClient.deleteBucket(bucketId as `0x${string}`);
-  // console.log('deleteBucket() txHash:', txHashDeleteBucket);
-  // if (!txHashDeleteBucket) {
-  //   throw new Error('deleteBucket() did not return a transaction hash');
-  // }
+  const txHashDeleteBucket: `0x${string}` | undefined = await storageHubClient.deleteBucket(bucketId as `0x${string}`);
+  console.log('deleteBucket() txHash:', txHashDeleteBucket);
+  if (!txHashDeleteBucket) {
+    throw new Error('deleteBucket() did not return a transaction hash');
+  }
 
-  // // Wait for transaction
-  // const receiptDeleteBucket = await publicClient.waitForTransactionReceipt({
-  //   hash: txHashDeleteBucket,
-  // });
-  // console.log('Bucket deletion receipt:', receiptDeleteBucket);
-  // if (receiptDeleteBucket.status !== 'success') {
-  //   throw new Error(`Bucket deletion failed: ${txHashDeleteBucket}`);
-  // }
+  // Wait for transaction
+  const receiptDeleteBucket = await publicClient.waitForTransactionReceipt({
+    hash: txHashDeleteBucket,
+  });
+  console.log('Bucket deletion receipt:', receiptDeleteBucket);
+  if (receiptDeleteBucket.status !== 'success') {
+    throw new Error(`Bucket deletion failed: ${txHashDeleteBucket}`);
+  }
   // --8<-- [end:delete-bucket]
 
   // Disconnect the Polkadot API at the very end

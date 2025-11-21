@@ -38,7 +38,7 @@ const main = async () => {
     console.log(`File downloaded to: ${downloadPath}\n`);
 
     // 5. Verify download
-    const isValid = await verifyDownload(DEMO_CONFIG.filePath, downloadPath);
+    const isValid = await verifyDownload(DEMO_CONFIG.filePath, DEMO_CONFIG.downloadPath);
     console.log(`File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}\n`);
 
     // Bonus: List existing buckets

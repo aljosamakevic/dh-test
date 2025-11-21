@@ -58,7 +58,7 @@ export async function verifyBucketCreation(bucketId: string) {
   return bucketData;
 }
 
-export async function deleteBucket(bucketId: string) {
+export async function deleteBucket(bucketId: string): Promise<boolean> {
   const txHash: `0x${string}` | undefined = await storageHubClient.deleteBucket(bucketId as `0x${string}`);
   console.log('deleteBucket() txHash:', txHash);
   if (!txHash) {
@@ -71,4 +71,6 @@ export async function deleteBucket(bucketId: string) {
   if (receipt.status !== 'success') {
     throw new Error(`Bucket deletion failed: ${txHash}`);
   }
+
+  return true;
 }

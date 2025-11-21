@@ -5,7 +5,7 @@ import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256 } from '@polkadot/types/interfaces';
 import { storageHubClient, address, publicClient, polkadotApi, account } from '../services/clientService.js';
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
-import { DownloadResult } from '@storagehub-sdk/msp-client';
+import { DownloadResult, FileInfo } from '@storagehub-sdk/msp-client';
 import { DEMO_CONFIG } from '../config/demoConfig.js';
 
 function extractPeerIDs(multiaddresses: string[]): string[] {
@@ -104,7 +104,10 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   return { fileKey, uploadReceipt };
 }
 
-export async function downloadFile(fileKey: H256, downloadPath: string): Promise<string> {
+export async function downloadFile(
+  fileKey: H256,
+  downloadPath: string
+): Promise<{ path: string; size: number; mime?: string }> {
   const downloadResponse: DownloadResult = await mspClient.files.downloadFile(fileKey.toHex());
 
   if (downloadResponse.status !== 200) {
@@ -117,7 +120,16 @@ export async function downloadFile(fileKey: H256, downloadPath: string): Promise
 
   return new Promise((resolve, reject) => {
     readableStream.pipe(writeStream);
-    writeStream.on('finish', () => resolve(downloadPath));
+    writeStream.on('finish', async () => {
+      const { size } = await import('node:fs/promises').then((fs) => fs.stat(downloadPath));
+      const mime = downloadResponse.contentType === null ? undefined : downloadResponse.contentType;
+
+      resolve({
+        path: downloadPath,
+        size,
+        mime, // if available
+      });
+    });
     writeStream.on('error', reject);
   });
 }
@@ -129,16 +141,28 @@ export async function verifyDownload(originalPath: string, downloadedPath: strin
   return originalBuffer.equals(downloadedBuffer);
 }
 
-export async function deleteFile(bucketId: string, fileKey: H256) {
+export async function requestDeleteFile(bucketId: string, fileKey: string): Promise<boolean> {
+  // Get file info before deletion
+  const fileInfo: FileInfo = await mspClient.files.getFileInfo(bucketId, fileKey);
+  console.log('File info before deletion:', fileInfo);
+
+  let formattedFileInfo: any = fileInfo;
+  ['fileKey', 'fingerprint', 'bucketId'].forEach((k) => (formattedFileInfo[k] = '0x' + formattedFileInfo[k]));
+  console.log('Formatted file info for deletion:', formattedFileInfo);
+
   // Request file deletion
-  const txHash: `0x${string}` = await storageHubClient.requestDeleteFile(bucketId as `0x${string}`, fileKey.toHex());
-  console.log('deleteFile() txHash:', txHash);
+  const txHashRequestDeleteFile: `0x${string}` = await storageHubClient.requestDeleteFile(fileInfo);
+  console.log('requestDeleteFile() txHash:', txHashRequestDeleteFile);
 
   // Wait for delete file transaction receipt
-  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-  if (receipt.status !== 'success') {
-    throw new Error(`File deletion failed: ${txHash}`);
+  const receiptRequestDeleteFile = await publicClient.waitForTransactionReceipt({
+    hash: txHashRequestDeleteFile,
+  });
+  console.log('File deletion receipt:', receiptRequestDeleteFile);
+  if (receiptRequestDeleteFile.status !== 'success') {
+    throw new Error(`File deletion failed: ${txHashRequestDeleteFile}`);
   }
 
-  console.log(`File with key ${fileKey.toHex()} deleted successfully from bucket ${bucketId}`);
+  console.log(`File with key ${fileKey} deleted successfully from bucket ${bucketId}`);
+  return true;
 }

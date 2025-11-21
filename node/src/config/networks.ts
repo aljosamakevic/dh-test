@@ -28,4 +28,4 @@ export const NETWORKS: Record<string, ChainData> = {
   },
 };
 
-export const chosenNetwork = NETWORKS.devnet;
+export const chosenNetwork = NETWORKS.testnet;
