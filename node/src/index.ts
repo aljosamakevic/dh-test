@@ -3,9 +3,9 @@ import '@storagehub/api-augment';
 import { initWasm } from '@storagehub-sdk/core';
 import { polkadotApi } from './services/clientService.js';
 import { DEMO_CONFIG } from './config/demoConfig.js';
-import { createBucket, deleteBucket, verifyBucketCreation } from './operations/bucketOperations.js';
-import { uploadFile, downloadFile, verifyDownload, deleteFile } from './operations/fileOperations.js';
-import { getBucketList } from './services/mspService.js';
+import { createBucket, verifyBucketCreation } from './operations/bucketOperations.js';
+import { uploadFile, downloadFile, verifyDownload } from './operations/fileOperations.js';
+// import { getBucketList } from './services/mspService.js';
 
 const main = async () => {
   console.log('🚀 Starting DataHaven Storage Demo...\n');
@@ -31,6 +31,8 @@ const main = async () => {
     console.log(`Status: ${uploadReceipt.status}\n`);
 
     // throw new Error('TEMP custom stop');
+
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // 4. Download file
     console.log('Downloading file...');
