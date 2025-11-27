@@ -82,6 +82,8 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
     storageRequestData.fingerprint === fingerprint.toString()
   );
 
+  // TO DO - wait until /buckets/{bucket_id} endpoint returns a correct bucket response
+
   // Authenticate bucket owner address with MSP prior to uploading file
   const authProfile = await authenticateUser();
   console.log('Authenticated user profile:', authProfile);
