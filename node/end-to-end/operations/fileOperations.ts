@@ -105,12 +105,12 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
 
   // --8<-- [start:read-storage-request]
   // Read the storage request data
-  const storageRequestData = storageRequest.unwrap();
+  const storageRequestData = storageRequest.unwrap().toHuman();
   console.log('Storage request data:', storageRequestData);
-  console.log('Storage request bucketId:', storageRequestData.bucketId.toString());
+  console.log('Storage request bucketId matches initial bucketId:', storageRequestData.bucketId === bucketId);
   console.log(
-    'Storage request fingerprint should be the same as initial fingerprint:',
-    storageRequestData.fingerprint.toString() === fingerprint.toString()
+    'Storage request fingerprint matches initial fingerprint',
+    storageRequestData.fingerprint === fingerprint.toString()
   );
   // --8<-- [end:read-storage-request]
 
