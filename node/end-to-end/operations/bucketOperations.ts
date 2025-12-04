@@ -1,6 +1,6 @@
 // --8<-- [start:imports]
 import { storageHubClient, address, publicClient, polkadotApi } from '../services/clientService.js';
-import { getMspInfo, getValueProps } from '../services/mspService.js';
+import { getMspInfo, getValueProps, mspClient } from '../services/mspService.js';
 // --8<-- [end:imports]
 
 // --8<-- [start:create-bucket]
@@ -66,3 +66,31 @@ export async function verifyBucketCreation(bucketId: string) {
   return bucketData;
 }
 // --8<-- [end:verify-bucket]
+
+// --8<-- [start:wait-for-bucket]
+export async function waitForIndexer(bucketId: string) {
+  const maxAttempts = 10;
+  const delayMs = 2000;
+
+  for (let i = 0; i < maxAttempts; i++) {
+    console.log(`Checking for bucket in MSP backend, attempt ${i + 1} of ${maxAttempts}...`);
+    try {
+      const bucket = await mspClient.buckets.getBucket(bucketId);
+
+      if (bucket) {
+        console.log('Bucket found in MSP backend:', bucket);
+        return;
+      }
+    } catch (error: any) {
+      if (error.status === 404 || error.body.error === 'Not found: Record') {
+        console.log(`Bucket not found in MSP backend yet (404).`);
+      } else {
+        console.log('Unexpected error while fetching bucket from MSP:', error);
+        throw error;
+      }
+    }
+    await new Promise((r) => setTimeout(r, delayMs));
+  }
+  throw new Error(`Bucket ${bucketId} not found in MSP backend after waiting`);
+}
+// --8<-- [end:wait-for-bucket]
