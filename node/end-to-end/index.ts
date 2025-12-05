@@ -1,10 +1,16 @@
 import '@storagehub/api-augment';
 import { initWasm } from '@storagehub-sdk/core';
 import { polkadotApi } from './services/clientService.js';
-import { downloadFile, uploadFile, verifyDownload } from './operations/fileOperations.js';
+import {
+  downloadFile,
+  uploadFile,
+  verifyDownload,
+  waitForBackendFileReady,
+  waitForMSPConfirmOnChain,
+} from './operations/fileOperations.js';
 import { HealthStatus } from '@storagehub-sdk/msp-client';
 import { mspClient } from './services/mspService.js';
-import { createBucket, verifyBucketCreation, waitForIndexer } from './operations/bucketOperations.js';
+import { createBucket, verifyBucketCreation, waitForBackendBucketReady } from './operations/bucketOperations.js';
 
 async function run() {
   // Initialize WASM
@@ -20,11 +26,12 @@ async function run() {
 
   // --8<-- [start:create-bucket]
   // 2. Create Bucket
-  const bucketName = 'init-bucket-026';
+  const bucketName = 'init-bucket-032';
   const { bucketId, txReceipt } = await createBucket(bucketName);
   console.log(`Created Bucket ID: ${bucketId}`);
   console.log(`createBucket() txReceipt: ${txReceipt}`);
   // --8<-- [end:create-bucket]
+  // const bucketId = '0xd25a71825b85583f68a1b7658c291bad4938203eb8910e1454e9cb3d8bb6c49b';
 
   // --8<-- [start:verify-bucket]
   // 3. Verify bucket exists on chain
@@ -32,10 +39,10 @@ async function run() {
   console.log('Bucket data:', bucketData);
   // --8<-- [end:verify-bucket]
 
-  // --8<-- [start:wait-for-bucket]
+  // --8<-- [start:wait-for-backend-bucket-ready]
   // 4. Wait until indexer/backend knows about the bucket
-  await waitForIndexer(bucketId);
-  // --8<-- [end:wait-for-bucket]
+  await waitForBackendBucketReady(bucketId);
+  // --8<-- [end:wait-for-backend-bucket-ready]
 
   // --8<-- [start:upload-file]
   // 5. Upload file
@@ -47,9 +54,17 @@ async function run() {
   console.log(`Status: ${uploadReceipt.status}\n`);
   // --8<-- [end:upload-file]
 
+  // --8<-- [start:wait-for-msp-confirm-on-chain]
+  // 6. Wait for file to be ready in the network before downloading
+  await waitForMSPConfirmOnChain(fileKey.toHex());
+  await waitForBackendFileReady(bucketId, fileKey.toHex());
+  // await new Promise((resolve) => setTimeout(resolve, 5000));
+  console.log('passed?');
+
+  // --8<-- [end:wait-for-msp-confirm-on-chain]
   // --8<-- [start:download-data]
 
-  // 6. Download file
+  // 7.. Download file
   const downloadedFilePath = new URL('./files/helloworld_downloaded.txt', import.meta.url).pathname;
   const downloadedFile = await downloadFile(fileKey, downloadedFilePath);
   console.log(`File type: ${downloadedFile.mime}`);
@@ -57,7 +72,7 @@ async function run() {
   // --8<-- [end:download-data]
 
   // --8<-- [start:verify-download]
-  // 7. Verify download integrity
+  // 8.. Verify download integrity
   const isValid = await verifyDownload(filePath, downloadedFilePath);
   console.log(`File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}`);
   // --8<-- [end:verify-download]

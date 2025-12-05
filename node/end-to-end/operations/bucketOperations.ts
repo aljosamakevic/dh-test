@@ -67,8 +67,8 @@ export async function verifyBucketCreation(bucketId: string) {
 }
 // --8<-- [end:verify-bucket]
 
-// --8<-- [start:wait-for-bucket]
-export async function waitForIndexer(bucketId: string) {
+// --8<-- [start:wait-for-backend-bucket-ready]
+export async function waitForBackendBucketReady(bucketId: string) {
   const maxAttempts = 10;
   const delayMs = 2000;
 
@@ -93,4 +93,4 @@ export async function waitForIndexer(bucketId: string) {
   }
   throw new Error(`Bucket ${bucketId} not found in MSP backend after waiting`);
 }
-// --8<-- [end:wait-for-bucket]
+// --8<-- [end:wait-for-backend-bucket-ready]

@@ -15,17 +15,17 @@ importers:
         specifier: ^16.5.3
         version: 16.5.3
       '@storagehub-sdk/core':
-        specifier: ^0.3.3
-        version: 0.3.3(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3))
+        specifier: ^0.3.4
+        version: 0.3.4(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3))
       '@storagehub-sdk/msp-client':
-        specifier: ^0.3.3
-        version: 0.3.3(@storagehub-sdk/core@0.3.3(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3)))(viem@2.38.6(typescript@5.9.3))
+        specifier: ^0.3.4
+        version: 0.3.4(@storagehub-sdk/core@0.3.4(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3)))(viem@2.38.6(typescript@5.9.3))
       '@storagehub/api-augment':
-        specifier: ^0.2.10
-        version: 0.2.10
+        specifier: ^0.2.11
+        version: 0.2.11
       '@storagehub/types-bundle':
-        specifier: ^0.2.7
-        version: 0.2.7
+        specifier: ^0.2.8
+        version: 0.2.8
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -582,24 +582,24 @@ packages:
   '@scure/bip39@1.6.0':
     resolution: {integrity: sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A==}
 
-  '@storagehub-sdk/core@0.3.3':
-    resolution: {integrity: sha512-7UtD6JBNJLaHUO/s8NinVhV3f5iaknvILsX7naB2y5Do33OS3oocNGGuwBhjGiyMXPlsIknR04t5hR2VdV+8hg==}
+  '@storagehub-sdk/core@0.3.4':
+    resolution: {integrity: sha512-CLr/PiwnNMi18h0vUjb1zYvx7MeespxB+FHhxwVQqsaByQ2sLfp6PpZhvKB3dBd+Wi85rt79LhubUYeGkIoqAA==}
     engines: {node: '>=22'}
     peerDependencies:
       viem: '>=2.38.3'
 
-  '@storagehub-sdk/msp-client@0.3.3':
-    resolution: {integrity: sha512-6ogaQOcw+xxi6xuiZ1IFJAFk7AvPD4CxL8FW96OcpZJBxRM9uilO90YNnpESFn1uFwiHC8BOv0kI06ee1vkfwg==}
+  '@storagehub-sdk/msp-client@0.3.4':
+    resolution: {integrity: sha512-GQd85nLK9dLIQxqsZJ6IzmNt2uOAohRju+aXGyTtjAP0isrP1Asefsuzi55e1wZ/8x7P2ppJhhqVUcziOIhinw==}
     engines: {node: '>=22'}
     peerDependencies:
       '@storagehub-sdk/core': '>=0.0.5'
       viem: '>=2.38.3'
 
-  '@storagehub/api-augment@0.2.10':
-    resolution: {integrity: sha512-rIMNRN0V0L8/YgGbMe7NJrX+whk7fTSnrxZQv6aAJquZbd+X7A7ep2fW9sAvSxZr24FttzcWPfRf+Yg15NCAig==}
+  '@storagehub/api-augment@0.2.11':
+    resolution: {integrity: sha512-acJ8LySaFAbQdfwl9+8ALxgKjeBTvniWXnMj7FVPTZEvgy8g7gK6anVT0ee1X60oq2osMmWzwASjcmWkHn4C5A==}
 
-  '@storagehub/types-bundle@0.2.7':
-    resolution: {integrity: sha512-Au5jRxc4lVJ+LM/FpG/4JQk0Ul4cwQL9pmkDbf5ZfTkboNNW36P6PLHG7RbVm54k1Jq7ohnYVGh/G31Z9iqxIA==}
+  '@storagehub/types-bundle@0.2.8':
+    resolution: {integrity: sha512-1jjQeEMczOm8vuzE6ciQVLKQt75+UrRwJD6D1eyOfNac2wLfSK1zJZjh22B8ensTHa/Z0AvJwhNODH+nx4+Vww==}
 
   '@substrate/connect-extension-protocol@2.2.2':
     resolution: {integrity: sha512-t66jwrXA0s5Goq82ZtjagLNd7DPGCNjHeehRlE/gcJmJ+G56C0W+2plqOMRicJ8XGR1/YFnUSEqUFiSNbjGrAA==}
@@ -1469,7 +1469,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
 
-  '@storagehub-sdk/core@0.3.3(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3))':
+  '@storagehub-sdk/core@0.3.4(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3))':
     dependencies:
       '@polkadot/types': 16.5.3
       abitype: 1.2.1(typescript@5.9.3)
@@ -1481,12 +1481,12 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@storagehub-sdk/msp-client@0.3.3(@storagehub-sdk/core@0.3.3(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3)))(viem@2.38.6(typescript@5.9.3))':
+  '@storagehub-sdk/msp-client@0.3.4(@storagehub-sdk/core@0.3.4(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3)))(viem@2.38.6(typescript@5.9.3))':
     dependencies:
-      '@storagehub-sdk/core': 0.3.3(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3))
+      '@storagehub-sdk/core': 0.3.4(typescript@5.9.3)(viem@2.38.6(typescript@5.9.3))
       viem: 2.38.6(typescript@5.9.3)
 
-  '@storagehub/api-augment@0.2.10':
+  '@storagehub/api-augment@0.2.11':
     dependencies:
       '@polkadot/api': 16.5.3
       '@polkadot/api-base': 16.5.3
@@ -1494,7 +1494,7 @@ snapshots:
       '@polkadot/typegen': 16.5.3
       '@polkadot/types': 16.5.3
       '@polkadot/types-codec': 16.5.3
-      '@storagehub/types-bundle': 0.2.7
+      '@storagehub/types-bundle': 0.2.8
       tsx: 4.20.5
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -1502,7 +1502,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@storagehub/types-bundle@0.2.7':
+  '@storagehub/types-bundle@0.2.8':
     dependencies:
       '@polkadot/api': 16.5.3
       '@polkadot/api-base': 16.5.3
