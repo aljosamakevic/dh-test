@@ -225,7 +225,7 @@ export async function waitForMSPConfirmOnChain(fileKey: string) {
 
 // --8<-- [start:wait-for-backend-file-ready]
 export async function waitForBackendFileReady(bucketId: string, fileKey: string) {
-  const maxAttempts = 10;
+  const maxAttempts = 15;
   const delayMs = 2000;
 
   for (let i = 0; i < maxAttempts; i++) {
@@ -247,8 +247,12 @@ export async function waitForBackendFileReady(bucketId: string, fileKey: string)
       // For any other status (e.g. "pending"), just keep waiting
       console.log(`File status is "${fileInfo.status}", waiting...`);
     } catch (error: any) {
-      console.log('Unexpected error while fetching file from MSP:', error);
-      throw error;
+      if (error?.status === 404 || error?.body?.error === 'Not found: Record') {
+        console.log('File not yet indexed in MSP backend (404 Not Found). Waiting before retry...');
+      } else {
+        console.log('Unexpected error while fetching file from MSP:', error);
+        throw error;
+      }
     }
     await new Promise((r) => setTimeout(r, delayMs));
   }

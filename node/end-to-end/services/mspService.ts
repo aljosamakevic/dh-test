@@ -49,9 +49,12 @@ const getMspHealth = async (): Promise<HealthStatus> => {
   return mspHealth;
 };
 
+// --8<-- [start:auth-user]
 // Authenticate the user via SIWE (Sign-In With Ethereum) using the connected wallet
 // Once authenticated, store the returned session token and retrieve the user’s profile
 const authenticateUser = async (): Promise<UserInfo> => {
+  // In development domain and uri can be arbitrary placeholders,
+  // but in production they must match your actual frontend origin.
   const domain = 'localnost';
   const uri = 'http://localnost';
   console.log('Authenticating user with MSP via SIWE...');
@@ -62,6 +65,7 @@ const authenticateUser = async (): Promise<UserInfo> => {
   const profile: UserInfo = await mspClient.auth.getProfile();
   return profile;
 };
+// --8<-- [end:auth-user]
 
 // --8<-- [start:msp-value-props]
 // Retrieve MSP value propositions and select one for bucket creation

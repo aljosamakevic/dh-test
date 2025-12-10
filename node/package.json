@@ -25,6 +25,7 @@
     "dotenv": "^17.2.3",
     "ethers": "^6.16.0",
     "pnpm": "^10.24.0",
+    "polkadot-api": "^1.23.0",
     "viem": "2.38.6"
   },
   "devDependencies": {
