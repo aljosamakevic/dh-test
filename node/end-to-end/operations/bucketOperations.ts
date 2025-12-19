@@ -56,6 +56,18 @@ export async function verifyBucketCreation(bucketId: string) {
   const { mspId } = await getMspInfo();
 
   const bucket = await polkadotApi.query.providers.buckets(bucketId);
+  // const bucketEVM = await storageHubClient.getBucket(bucketId);
+  // console.log('BucketEVM found on chain:', !bucketEVM.isEmpty);
+
+  // if (bucketEVM.isEmpty) {
+  //   throw new Error('Bucket not found on chain after creation');
+  // }
+
+  // const bucketData = bucketEVM.unwrap().toHuman();
+  // console.log('Bucket userId matches initial bucket owner address', bucketData.userId === address);
+  // console.log(`Bucket MSPId matches initial MSPId: ${bucketData.mspId === mspId}`);
+  // return bucketData;
+
   if (bucket.isEmpty) {
     throw new Error('Bucket not found on chain after creation');
   }

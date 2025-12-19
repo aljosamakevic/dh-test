@@ -1,7 +1,7 @@
 import { initWasm } from '@storagehub-sdk/core';
-import { polkadotApi } from './services/clientService.js';
+import { polkadotApi } from '../services/clientService.js';
 import { Keyring } from '@polkadot/api';
-import { config } from '../src/config/environment.js';
+import { config } from '../../src/config/environment.js';
 import { Binary } from 'polkadot-api';
 
 async function requestBspSignUp() {
@@ -11,9 +11,12 @@ async function requestBspSignUp() {
   const keyring = new Keyring({ type: 'sr25519' });
   const bspSigner = keyring.addFromUri(config.bspSeedPhrase);
 
+  const nodeIdentity = '12D3KooWPPvCxeYfyPYC9eGT674VDzUc8QSYujJrQtZsVZSdHgAS';
+  const ipAddress = '79.117.162.20';
+
   // BSP configuration
   const capacity = BigInt(10_737_418_240); // 10 GiB (80% of 12 GiB disk)
-  const multiaddresses = ['/ip4/127.0.0.1/tcp/30333'].map((addr) => Binary.fromText(addr));
+  const multiaddresses = [`/ip4/${ipAddress}/tcp/30334/p2p/${nodeIdentity}`].map((addr) => Binary.fromText(addr));
 
   // Step 1: Request BSP sign up
   const requestTx = polkadotApi.tx.Providers.request_bsp_sign_up({

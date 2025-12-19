@@ -52,8 +52,8 @@ const getMspStats = async (): Promise<StatsResponse> => {
 const authenticateUser = async (): Promise<UserInfo> => {
   // In development domain and uri can be arbitrary placeholders,
   // but in production they must match your actual frontend origin.
-  const domain = 'localnost';
-  const uri = 'http://localnost';
+  const domain = 'localhost';
+  const uri = 'http://localhost';
   console.log('Authenticating user with MSP via SIWE...');
   const siweSession = await mspClient.auth.SIWE(walletClient, domain, uri);
   console.log('SIWE Session:', siweSession);

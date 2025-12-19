@@ -1,11 +1,11 @@
 import { createReadStream, createWriteStream, statSync } from 'node:fs';
 import { Readable } from 'node:stream';
-import { FileManager } from '@storagehub-sdk/core';
+import { FileManager, FileInfo } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256 } from '@polkadot/types/interfaces';
 import { storageHubClient, address, publicClient, polkadotApi, account } from '../services/clientService.js';
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
-import { DownloadResult, FileInfo } from '@storagehub-sdk/msp-client';
+import { DownloadResult } from '@storagehub-sdk/msp-client';
 import { DEMO_CONFIG } from '../config/demoConfig.js';
 import { PalletFileSystemStorageRequestMetadata } from '@polkadot/types/lookup';
 

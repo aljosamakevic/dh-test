@@ -225,7 +225,7 @@ export async function waitForMSPConfirmOnChain(fileKey: string) {
 
 // --8<-- [start:wait-for-backend-file-ready]
 export async function waitForBackendFileReady(bucketId: string, fileKey: string) {
-  const maxAttempts = 15;
+  const maxAttempts = 25;
   const delayMs = 2000;
 
   for (let i = 0; i < maxAttempts; i++) {
