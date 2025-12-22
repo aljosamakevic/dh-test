@@ -62,4 +62,4 @@ const polkadotApi: ApiPromise = await ApiPromise.create({
   noInitWarn: true,
 });
 
-export { account, address, publicClient, walletClient, storageHubClient, polkadotApi };
+export { chain, account, address, publicClient, walletClient, storageHubClient, polkadotApi };
