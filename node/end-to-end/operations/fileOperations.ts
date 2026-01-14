@@ -1,12 +1,12 @@
 // --8<-- [start:imports]
 import { createReadStream, statSync, createWriteStream } from 'node:fs';
 import { Readable } from 'node:stream';
-import { FileManager, ReplicationLevel } from '@storagehub-sdk/core';
+import { FileInfo, FileManager, ReplicationLevel } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256 } from '@polkadot/types/interfaces';
 import { storageHubClient, address, publicClient, polkadotApi, account } from '../services/clientService.js';
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
-import { DownloadResult } from '@storagehub-sdk/msp-client';
+import { DownloadResult, FileListResponse } from '@storagehub-sdk/msp-client';
 import { PalletFileSystemStorageRequestMetadata } from '@polkadot/types/lookup';
 // --8<-- [end:imports]
 
@@ -259,3 +259,34 @@ export async function waitForBackendFileReady(bucketId: string, fileKey: string)
   throw new Error('Timed out waiting for MSP backend to mark file as ready');
 }
 // --8<-- [end:wait-for-backend-file-ready]
+
+// --8<-- [start:request-file-deletion]
+export async function requestDeleteFile(bucketId: string, fileKey: string): Promise<boolean> {
+  // Get file info before deletion
+  const fileInfo: FileInfo = await mspClient.files.getFileInfo(bucketId, fileKey);
+  console.log('File info:', fileInfo);
+
+  // Request file deletion
+  const txHashRequestDeleteFile: `0x${string}` = await storageHubClient.requestDeleteFile(fileInfo);
+  console.log('requestDeleteFile() txHash:', txHashRequestDeleteFile);
+
+  // Wait for delete file transaction receipt
+  const receiptRequestDeleteFile = await publicClient.waitForTransactionReceipt({
+    hash: txHashRequestDeleteFile,
+  });
+  console.log('requestDeleteFile() txReceipt:', receiptRequestDeleteFile);
+  if (receiptRequestDeleteFile.status !== 'success') {
+    throw new Error(`File deletion failed: ${txHashRequestDeleteFile}`);
+  }
+
+  console.log(`File with key ${fileKey} deleted successfully from bucket ${bucketId}`);
+  return true;
+}
+// --8<-- [end:request-file-deletion]
+
+// --8<-- [start:get-bucket-files-msp]
+export async function getBucketFilesFromMSP(bucketId: string): Promise<FileListResponse> {
+  const files: FileListResponse = await mspClient.buckets.getFiles(bucketId);
+  return files;
+}
+// --8<-- [end:get-bucket-files-msp]
