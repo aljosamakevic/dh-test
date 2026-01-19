@@ -225,8 +225,10 @@ export async function waitForMSPConfirmOnChain(fileKey: string) {
 
 // --8<-- [start:wait-for-backend-file-ready]
 export async function waitForBackendFileReady(bucketId: string, fileKey: string) {
-  const maxAttempts = 25;
-  const delayMs = 2000;
+  // wait up to 12 minutes (144 attempts x 5 seconds)
+  // around 11 minutes is the amount of time BSPs have to reach the required replication level
+  const maxAttempts = 144;
+  const delayMs = 5000;
 
   for (let i = 0; i < maxAttempts; i++) {
     console.log(`Checking for file in MSP backend, attempt ${i + 1} of ${maxAttempts}...`);
@@ -241,7 +243,9 @@ export async function waitForBackendFileReady(bucketId: string, fileKey: string)
       } else if (fileInfo.status === 'rejected') {
         throw new Error('File upload was rejected by MSP');
       } else if (fileInfo.status === 'expired') {
-        throw new Error('File upload request expired before MSP processed it');
+        throw new Error(
+          'Storage request expired: the required number of BSP replicas was not achieved within the deadline'
+        );
       }
 
       // For any other status (e.g. "pending"), just keep waiting
