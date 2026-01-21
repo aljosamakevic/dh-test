@@ -1,4 +1,11 @@
-import { HealthStatus, InfoResponse, MspClient, UserInfo, ValueProp } from '@storagehub-sdk/msp-client';
+import {
+  HealthStatus,
+  InfoResponse,
+  MspClient,
+  PaymentStreamsResponse,
+  UserInfo,
+  ValueProp,
+} from '@storagehub-sdk/msp-client';
 import { HttpClientConfig } from '@storagehub-sdk/core';
 import { address, walletClient } from './clientService.js';
 
@@ -82,5 +89,14 @@ const getValueProps = async (): Promise<`0x${string}`> => {
 // Make sure to add this method to the export statement at the bottom of the file too
 // --8<-- [end:msp-value-props]
 
+// --8<-- [start:payment-streams]
+const getPaymentStreams = async (): Promise<PaymentStreamsResponse> => {
+  // Fetch payment streams associated with the authenticated user
+  const paymentStreams = await mspClient.info.getPaymentStreams();
+  return paymentStreams;
+};
+// Make sure to add this method to the export statement at the bottom of the file too
+// --8<-- [end:payment-streams]
+
 // Export initialized client and helper functions for use in other modules
-export { mspClient, getMspInfo, getMspHealth, authenticateUser, getValueProps };
+export { mspClient, getMspInfo, getMspHealth, authenticateUser, getValueProps, getPaymentStreams };
