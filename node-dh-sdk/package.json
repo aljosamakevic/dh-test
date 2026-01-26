@@ -4,12 +4,19 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsx end-to-end/index.ts"
   },
   "dependencies": {
-    "@datahaven-xyz/sdk-internal": "github:wookosh/datahaven-sdk-internal"
+    "@datahaven-xyz/sdk-internal": "github:wookosh/datahaven-sdk-internal",
+    "@storagehub-sdk/core": "^0.4.3",
+    "dotenv": "^17.2.3",
+    "viem": "^2.45.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
   }
 }
