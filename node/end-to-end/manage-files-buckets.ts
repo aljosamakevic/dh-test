@@ -4,7 +4,7 @@ import { initWasm } from '@storagehub-sdk/core';
 import { polkadotApi } from './services/clientService.js';
 import { authenticateUser } from './services/mspService.js';
 import { getBucketFilesFromMSP, requestDeleteFile } from './operations/fileOperations.js';
-import { deleteBucket, getBucketsFromMSP } from './operations/bucketOperations.js';
+import { deleteBucket, getBucketsFromMSP, waitForBackendBucketEmpty } from './operations/bucketOperations.js';
 // --8<-- [end:imports]
 
 async function run() {
@@ -41,6 +41,11 @@ async function run() {
   const isDeletionRequestSuccessful = await requestDeleteFile(bucketId, fileKey);
   console.log('File deletion request submitted successfully:', isDeletionRequestSuccessful);
   // --8<-- [end:request-file-deletion]
+
+  // --8<-- [start:wait-for-backend-bucket-empty]
+  // Wait for backend to process deletion and verify bucket is empty
+  await waitForBackendBucketEmpty(bucketId);
+  // --8<-- [end:wait-for-backend-bucket-empty]
 
   // --8<-- [start:delete-bucket]
   // Delete bucket
