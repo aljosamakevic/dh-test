@@ -26,7 +26,7 @@ async function run() {
 
   // --8<-- [start:create-bucket]
   // 2. Create Bucket
-  const bucketName = 'init-bucket-045';
+  const bucketName = 'init-bucket-046';
   const { bucketId, txReceipt } = await createBucket(bucketName);
   console.log(`Created Bucket ID: ${bucketId}`);
   console.log(`createBucket() txReceipt: ${txReceipt}`);

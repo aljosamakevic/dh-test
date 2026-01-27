@@ -2,6 +2,7 @@
 import { Bucket } from '@storagehub-sdk/msp-client';
 import { storageHubClient, address, publicClient, polkadotApi } from '../services/clientService.js';
 import { getMspInfo, getValueProps, mspClient } from '../services/mspService.js';
+// import { buildGasTxOpts } from './txOperations.js';
 // --8<-- [end:imports]
 
 // --8<-- [start:create-bucket]
@@ -26,12 +27,15 @@ export async function createBucket(bucketName: string) {
 
   const isPrivate = false;
 
+  // const gasTxOpts = await buildGasTxOpts();
+
   // Create bucket on chain
   const txHash: `0x${string}` | undefined = await storageHubClient.createBucket(
     mspId as `0x${string}`,
     bucketName,
     isPrivate,
     valuePropId
+    // gasTxOpts
   );
 
   console.log('createBucket() txHash:', txHash);
