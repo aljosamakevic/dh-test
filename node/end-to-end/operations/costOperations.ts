@@ -14,10 +14,7 @@ interface TimeRemaining {
 const TICK_DURATION_SECONDS = 6n; // 6 seconds per block
 const DECIMALS = 18;
 
-const calculateTimeRemaining = (balanceInMock: number, streams: PaymentStreamsResponse): TimeRemaining => {
-  // Convert balance to smallest unit (BigInt for precision)
-  const balanceSmallestUnit = BigInt(Math.floor(balanceInMock * 10 ** DECIMALS));
-
+const calculateTimeRemaining = (balanceInWei: bigint, streams: PaymentStreamsResponse): TimeRemaining => {
   // Sum all costPerTick values
   const totalCostPerTick = streams.streams.reduce(
     (sum: bigint, stream: PaymentStreamInfo) => sum + BigInt(stream.costPerTick),
@@ -29,7 +26,7 @@ const calculateTimeRemaining = (balanceInMock: number, streams: PaymentStreamsRe
   }
 
   // Ticks remaining = balance / total cost per tick
-  const ticksRemaining = balanceSmallestUnit / totalCostPerTick;
+  const ticksRemaining = balanceInWei / totalCostPerTick;
   const secondsRemaining = ticksRemaining * TICK_DURATION_SECONDS;
 
   return {
@@ -68,13 +65,15 @@ const formatDuration = (totalSeconds: bigint): string => {
 // --8<-- [end:format-duration]
 
 // --8<-- [start:get-balance]
-const getBalance = async (address: `0x${string}`): Promise<number> => {
+const getBalance = async (address: `0x${string}`): Promise<bigint> => {
   // Query balance
-  const balance = parseFloat(formatEther(await publicClient.getBalance({ address })));
+  // const balance = parseFloat(formatEther(await publicClient.getBalance({ address })));
+  const balanceWei = await publicClient.getBalance({ address });
   console.log(`Address: ${address}`);
-  console.log(`Balance: ${balance} (MOCK)`);
+  console.log(`Balance: ${balanceWei} (wei)`);
+  console.log(`Balance: ${Number(formatEther(balanceWei))} (MOCK)`);
 
-  return balance;
+  return balanceWei;
 };
 // --8<-- [end:get-balance]
 
