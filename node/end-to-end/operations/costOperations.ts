@@ -77,4 +77,26 @@ const getBalance = async (address: `0x${string}`): Promise<bigint> => {
 };
 // --8<-- [end:get-balance]
 
+// --8<-- [start:pay-outstanding-debt]
+const payOutstandingDebt = async (paymentStreams: PaymentStreamsResponse, providers: string[]) => {
+  // Select paymentStreams.payOutstandingDebt(providers)
+  const txHash: `0x${string}` | undefined = await paymentStreams.payOutstandingDebt(providers);
+  console.log('payOutstandingDebt() txHash:', txHash);
+  if (!txHash) {
+    throw new Error('payOutstandingDebt() did not return a transaction hash');
+  }
+
+  // Wait for transaction
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+  console.log('payOutstandingDebt() txReceipt:', receipt);
+  if (receipt.status !== 'success') {
+    throw new Error(`Payment of outstanding debt failed: ${txHash}`);
+  }
+
+  return true;
+};
+// --8<-- [end:pay-outstanding-debt]
+
 export { calculateTimeRemaining, formatDuration, getBalance };
