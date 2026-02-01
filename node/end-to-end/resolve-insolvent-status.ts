@@ -29,6 +29,8 @@ async function run() {
   const balance = await getBalance(address); // MOCK token in wei
   // more logic here
 
+  // test
+
   // Disconnect from Polkadot API
   await polkadotApi.disconnect();
 }
