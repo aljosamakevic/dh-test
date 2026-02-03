@@ -4,10 +4,16 @@ import { createPublicClient, createWalletClient, http, WalletClient, PublicClien
 import { StorageHubClient } from '@storagehub-sdk/core';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { types } from '@storagehub/types-bundle';
+import { Keyring } from '@polkadot/api';
+import { config } from '../../src/config/environment.js';
 import 'dotenv/config'; // ***
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
 const address = account.address;
+
+// Create signer from secret URI
+const walletKeyring = new Keyring({ type: 'ethereum' });
+const signer = walletKeyring.addFromUri(config.privateKey);
 
 const NETWORKS = {
   devnet: {
@@ -62,4 +68,4 @@ const polkadotApi: ApiPromise = await ApiPromise.create({
   noInitWarn: true,
 });
 
-export { chain, account, address, publicClient, walletClient, storageHubClient, polkadotApi };
+export { chain, account, address, publicClient, walletClient, storageHubClient, polkadotApi, signer };

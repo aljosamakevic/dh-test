@@ -1,7 +1,7 @@
 import { initWasm } from '@storagehub-sdk/core';
-import { polkadotApi } from '../services/clientService.js';
+import { polkadotApi } from './services/clientService.js';
 import { Keyring } from '@polkadot/api';
-import { config } from '../../src/config/environment.js';
+import { config } from '../src/config/environment.js';
 import { Binary } from 'polkadot-api';
 
 async function requestBspSignUp() {

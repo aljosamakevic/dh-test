@@ -26,7 +26,7 @@ async function runSignUpRequest() {
   // --8<-- [start:fund-bsp-address]
   // Amount in smallest units of the native token.
   const depositAmount = 200_000_000_000_000_000_000n;
-  throw new Error('Funding disabled for now');
+  // throw new Error('Funding disabled for now');
   await fundBspAddress(bspAddress, depositAmount);
 
   await checkBspBalance(bspAddress);
