@@ -3,8 +3,15 @@ import '@storagehub/api-augment';
 import { initWasm } from '@storagehub-sdk/core';
 import { address, polkadotApi } from './services/clientService.js';
 import { authenticateUser, getPaymentStreams } from './services/mspService.js';
-import { clearInsolventFlag, isInsolvent, payOutstandingDebt } from './operations/costOperations.js';
+import {
+  calculateTotalOutstandingDebt,
+  clearInsolventFlag,
+  getBalance,
+  isInsolvent,
+  payOutstandingDebt,
+} from './operations/costOperations.js';
 import { PaymentStreamInfo } from '@storagehub-sdk/msp-client';
+import { formatEther } from 'viem';
 // --8<-- [end:imports]
 
 async function run() {
@@ -39,8 +46,20 @@ async function run() {
   // --8<-- [end:payment-streams]
 
   // --8<-- [start:pay-outstanding-debt]
-  // const balance = await getBalance(address); // MOCK token in wei
-  // calculate outstanding debt amount
+  const balance = await getBalance(address); // MOCK token in wei
+  console.log(`Current balance: ${balance} (wei), ${Number(formatEther(balance))} (MOCK)`);
+  // Calculate total outstanding debt
+  const { totalRawDebt, totalEffectiveDebt } = await calculateTotalOutstandingDebt(address, paymentStreams);
+  // Log debts
+  console.log(`Total Raw Debt: ${totalRawDebt} (wei), ${Number(formatEther(totalRawDebt))} (MOCK)`);
+  console.log(`Total Effective Debt: ${totalEffectiveDebt} (wei), ${Number(formatEther(totalEffectiveDebt))} (MOCK)`);
+
+  if (balance < totalEffectiveDebt) {
+    console.log('Insufficient balance to pay outstanding debt.');
+    await polkadotApi.disconnect();
+    return;
+  }
+
   // Pay outstanding debt
   await payOutstandingDebt(providerIds);
   // --8<-- [end:pay-outstanding-debt]
