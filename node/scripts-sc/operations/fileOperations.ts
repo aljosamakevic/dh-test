@@ -4,10 +4,20 @@ import { Readable } from 'node:stream';
 import { FileInfo, FileManager, ReplicationLevel } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256 } from '@polkadot/types/interfaces';
-import { storageHubClient, address, publicClient, polkadotApi, account } from '../services/clientService.js';
+import {
+  account,
+  address,
+  filesystemContractAddress,
+  publicClient,
+  walletClient,
+  polkadotApi,
+  chain,
+} from '../services/clientService.js';
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
 import { DownloadResult, FileListResponse } from '@storagehub-sdk/msp-client';
 import { PalletFileSystemStorageRequestMetadata } from '@polkadot/types/lookup';
+import { toHex, hexToBytes } from 'viem';
+import fileSystemAbi from '../abis/FileSystem.json' with { type: 'json' };
 // --8<-- [end:imports]
 
 export async function uploadFile(bucketId: string, filePath: string, fileName: string) {
@@ -61,17 +71,24 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   // --8<-- [end:define-storage-request-parameters]
 
   // --8<-- [start:issue-storage-request]
-  // Issue storage request
-  const txHash: `0x${string}` | undefined = await storageHubClient.issueStorageRequest(
-    bucketId as `0x${string}`,
-    fileName,
-    fingerprint.toHex() as `0x${string}`,
-    fileSizeBigInt,
-    mspId as `0x${string}`,
-    peerIds,
-    replicationLevel,
-    replicas
-  );
+  // Issue storage request by calling the FileSystem precompile directly
+  const txHash = await walletClient.writeContract({
+    account,
+    address: filesystemContractAddress,
+    abi: fileSystemAbi,
+    functionName: 'issueStorageRequest',
+    args: [
+      bucketId as `0x${string}`,
+      toHex(fileName),
+      fingerprint.toHex() as `0x${string}`,
+      fileSizeBigInt,
+      mspId as `0x${string}`,
+      peerIds.map((id) => toHex(id)),
+      replicationLevel,
+      replicas,
+    ],
+    chain: chain,
+  });
   console.log('issueStorageRequest() txHash:', txHash);
   if (!txHash) {
     throw new Error('issueStorageRequest() did not return a transaction hash');
@@ -270,8 +287,40 @@ export async function requestDeleteFile(bucketId: string, fileKey: string): Prom
   const fileInfo: FileInfo = await mspClient.files.getFileInfo(bucketId, fileKey);
   console.log('File info:', fileInfo);
 
-  // Request file deletion
-  const txHashRequestDeleteFile: `0x${string}` = await storageHubClient.requestDeleteFile(fileInfo);
+  // Build the signed intention for file deletion
+  // The contract expects a FileOperationIntention struct { fileKey: bytes32, operation: uint8 }
+  // FileOperation.Delete = 0
+  const fileOperation = 0; // FileOperation.Delete
+  const fileKeyBytes = hexToBytes(fileInfo.fileKey);
+  const rawMessage = new Uint8Array([...fileKeyBytes, fileOperation]);
+
+  // Sign the raw 33-byte message (32-byte fileKey + 1-byte operation) using EIP-191 personal_sign
+  const signature = await walletClient.signMessage({
+    account,
+    message: { raw: rawMessage },
+  });
+
+  const signedIntention = {
+    fileKey: fileInfo.fileKey,
+    operation: fileOperation,
+  };
+
+  // Request file deletion by calling the FileSystem precompile directly
+  const txHashRequestDeleteFile = await walletClient.writeContract({
+    account,
+    address: filesystemContractAddress,
+    abi: fileSystemAbi,
+    functionName: 'requestDeleteFile',
+    args: [
+      signedIntention,
+      signature,
+      fileInfo.bucketId,
+      toHex(fileInfo.location),
+      fileInfo.size,
+      fileInfo.fingerprint,
+    ],
+    chain: chain,
+  });
   console.log('requestDeleteFile() txHash:', txHashRequestDeleteFile);
 
   // Wait for delete file transaction receipt
