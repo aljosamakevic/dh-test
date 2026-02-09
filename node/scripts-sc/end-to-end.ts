@@ -26,14 +26,12 @@ async function run() {
 
   // --8<-- [start:create-bucket]
   // 2. Create Bucket
-  const bucketName = 'init-bucket-047';
+  const bucketName = 'bucket-49';
   const { bucketId, txReceipt } = await createBucket(bucketName);
   console.log(`Created Bucket ID: ${bucketId}`);
   console.log(`createBucket() txReceipt: ${txReceipt}`);
   // --8<-- [end:create-bucket]
   // const bucketId = '0xd25a71825b85583f68a1b7658c291bad4938203eb8910e1454e9cb3d8bb6c49b';
-
-  throw new Error('Stop here');
 
   // --8<-- [start:verify-bucket]
   // 3. Verify bucket exists on chain
@@ -58,7 +56,7 @@ async function run() {
 
   // --8<-- [start:wait-for-msp-confirm-on-chain]
   // 6. Wait for file to be ready in the network before downloading
-  await waitForMSPConfirmOnChain(fileKey.toHex());
+  //   await waitForMSPConfirmOnChain(fileKey.toHex());
   await waitForBackendFileReady(bucketId, fileKey.toHex());
   // await new Promise((resolve) => setTimeout(resolve, 5000));
   console.log('passed?');
