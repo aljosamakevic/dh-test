@@ -161,6 +161,36 @@ export async function getBucketsFromMSP(): Promise<Bucket[]> {
 }
 // --8<-- [end:get-buckets-msp]
 
+// --8<-- [start:update-bucket-privacy]
+export async function updateBucketPrivacy(bucketId: string, isPrivate: boolean): Promise<boolean> {
+  // Update bucket privacy on chain by calling the FileSystem precompile directly
+  const txHash = await walletClient.writeContract({
+    account,
+    address: filesystemContractAddress,
+    abi: fileSystemAbi,
+    functionName: 'updateBucketPrivacy',
+    args: [bucketId as `0x${string}`, isPrivate],
+    chain: chain,
+  });
+  console.log('updateBucketPrivacy() txHash:', txHash);
+  if (!txHash) {
+    throw new Error('updateBucketPrivacy() did not return a transaction hash');
+  }
+
+  // Wait for transaction receipt
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+  console.log('updateBucketPrivacy() txReceipt:', receipt);
+  if (receipt.status !== 'success') {
+    throw new Error(`Bucket privacy update failed: ${txHash}`);
+  }
+
+  console.log(`Bucket ${bucketId} privacy updated to ${isPrivate ? 'private' : 'public'}`);
+  return true;
+}
+// --8<-- [end:update-bucket-privacy]
+
 // --8<-- [start:wait-for-backend-bucket-empty]
 export async function waitForBackendBucketEmpty(bucketId: string) {
   const maxAttempts = 144;

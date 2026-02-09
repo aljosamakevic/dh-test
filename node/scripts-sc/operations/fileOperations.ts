@@ -337,6 +337,54 @@ export async function requestDeleteFile(bucketId: string, fileKey: string): Prom
 }
 // --8<-- [end:request-file-deletion]
 
+// --8<-- [start:revoke-storage-request]
+export async function revokeStorageRequest(fileKey: string): Promise<boolean> {
+  // Revoke a pending storage request by calling the FileSystem precompile directly
+  const txHash = await walletClient.writeContract({
+    account,
+    address: filesystemContractAddress,
+    abi: fileSystemAbi,
+    functionName: 'revokeStorageRequest',
+    args: [fileKey as `0x${string}`],
+    chain: chain,
+  });
+  console.log('revokeStorageRequest() txHash:', txHash);
+  if (!txHash) {
+    throw new Error('revokeStorageRequest() did not return a transaction hash');
+  }
+
+  // Wait for transaction receipt
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+  console.log('revokeStorageRequest() txReceipt:', receipt);
+  if (receipt.status !== 'success') {
+    throw new Error(`Storage request revocation failed: ${txHash}`);
+  }
+
+  console.log(`Storage request for file key ${fileKey} revoked successfully`);
+  return true;
+}
+// --8<-- [end:revoke-storage-request]
+
+// --8<-- [start:get-pending-file-deletion-requests-count]
+export async function getPendingFileDeletionRequestsCount(user?: `0x${string}`): Promise<number> {
+  // Query the number of pending file deletion requests for a user
+  // Defaults to the current account address if no user is provided
+  const targetAddress = user ?? address;
+
+  const count = (await publicClient.readContract({
+    address: filesystemContractAddress,
+    abi: fileSystemAbi,
+    functionName: 'getPendingFileDeletionRequestsCount',
+    args: [targetAddress],
+  })) as number;
+  console.log(`Pending file deletion requests for ${targetAddress}: ${count}`);
+
+  return count;
+}
+// --8<-- [end:get-pending-file-deletion-requests-count]
+
 // --8<-- [start:get-bucket-files-msp]
 export async function getBucketFilesFromMSP(bucketId: string): Promise<FileListResponse> {
   const files: FileListResponse = await mspClient.buckets.getFiles(bucketId);
