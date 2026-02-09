@@ -9,8 +9,8 @@ async function run() {
 
   console.log('🚀 Starting File Deletion Script...\n');
 
-  const bucketId = 'INSERT_BUCKET_ID';
-  const fileKey = 'INSERT_FILE_KEY';
+  const bucketId = '0xdfe5918747e234609fa3cdc804b30c647988e3e4a76cb830bcfa281a65b9db60';
+  const fileKey = '0xa8e1ba9bee31f1406991205c75974bd524d2b57b86eb1d324dab187fde29f27f';
 
   // 1. Check pending file deletion requests count BEFORE deletion
   console.log('\n--- Checking pending file deletion requests BEFORE deletion ---');
@@ -19,7 +19,7 @@ async function run() {
 
   // 2. Request file deletion
   console.log('--- Requesting file deletion ---');
-  await requestDeleteFile(bucketId, fileKey.toHex());
+  await requestDeleteFile(bucketId, fileKey);
 
   // 3. Check pending file deletion requests count AFTER deletion
   console.log('\n--- Checking pending file deletion requests AFTER deletion ---');

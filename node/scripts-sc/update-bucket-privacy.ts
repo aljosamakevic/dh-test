@@ -8,7 +8,7 @@ async function run() {
 
   console.log('🚀 Starting Update Bucket Privacy Script...\n');
 
-  const bucketId = 'INSERT_BUCKET_ID';
+  const bucketId = '0xf7c6f9e65cac2166f32e0c0b141166a967d056957f64d973df0b1f744141d02a';
 
   // 1. Update bucket privacy to private
   console.log('--- Updating bucket to PRIVATE ---');
