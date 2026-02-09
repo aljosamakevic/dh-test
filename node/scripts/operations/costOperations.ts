@@ -79,7 +79,7 @@ const getBalance = async (address: `0x${string}`): Promise<bigint> => {
 // --8<-- [end:get-balance]
 
 // --8<-- [start:is-insolvent]
-const isInsolvent = async (address: string) => {
+const isInsolvent = async (address: `0x${string}`) => {
   // Query if user is labelled as insolvent by the network
   const userWithoutFundsResponse = await polkadotApi.query.paymentStreams.usersWithoutFunds(address);
   console.log(`User ${address} without funds response:`, userWithoutFundsResponse.toHuman());
@@ -89,7 +89,7 @@ const isInsolvent = async (address: string) => {
 // --8<-- [end:is-insolvent]
 
 // --8<-- [start:calculate-total-outstanding-debt]
-const calculateTotalOutstandingDebt = async (address: string, paymentStreams: PaymentStreamsResponse) => {
+const calculateTotalOutstandingDebt = async (address: `0x${string}`, paymentStreams: PaymentStreamsResponse) => {
   const seen = new Set<string>();
 
   // Get current price index
