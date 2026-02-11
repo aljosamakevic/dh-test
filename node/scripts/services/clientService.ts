@@ -1,11 +1,11 @@
 import { privateKeyToAccount } from 'viem/accounts';
-import { Chain, defineChain } from 'viem';
 import { createPublicClient, createWalletClient, http, WalletClient, PublicClient } from 'viem';
 import { StorageHubClient } from '@storagehub-sdk/core';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { types } from '@storagehub/types-bundle';
 import { Keyring } from '@polkadot/api';
 import { config } from '../../src/config/environment.js';
+import { NETWORKS, chain } from '../config/networks.js';
 import 'dotenv/config'; // ***
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
@@ -15,53 +15,27 @@ const address = account.address;
 const walletKeyring = new Keyring({ type: 'ethereum' });
 const signer = walletKeyring.addFromUri(config.privateKey);
 
-const NETWORKS = {
-  devnet: {
-    id: 181222,
-    name: 'DataHaven Local Devnet',
-    rpcUrl: 'http://127.0.0.1:9666',
-    wsUrl: 'wss://127.0.0.1:9666',
-    mspUrl: 'http://127.0.0.1:8080/',
-    nativeCurrency: { name: 'StorageHub', symbol: 'SH', decimals: 18 },
-  },
-  testnet: {
-    id: 55931,
-    name: 'DataHaven Testnet',
-    rpcUrl: 'https://services.datahaven-testnet.network/testnet',
-    wsUrl: 'wss://services.datahaven-testnet.network/testnet',
-    mspUrl: 'https://deo-dh-backend.testnet.datahaven-infra.network/',
-    nativeCurrency: { name: 'Mock', symbol: 'MOCK', decimals: 18 },
-  },
-};
-
-const chain: Chain = defineChain({
-  id: NETWORKS.testnet.id,
-  name: NETWORKS.testnet.name,
-  nativeCurrency: NETWORKS.testnet.nativeCurrency,
-  rpcUrls: { default: { http: [NETWORKS.testnet.rpcUrl] } },
-});
-
 const walletClient: WalletClient = createWalletClient({
   chain,
   account,
-  transport: http(NETWORKS.testnet.rpcUrl),
+  transport: http(NETWORKS.devnet.rpcUrl),
 });
 
 const publicClient: PublicClient = createPublicClient({
   chain,
-  transport: http(NETWORKS.testnet.rpcUrl),
+  transport: http(NETWORKS.devnet.rpcUrl),
 });
 
 // Create StorageHub client
 const storageHubClient: StorageHubClient = new StorageHubClient({
-  rpcUrl: NETWORKS.testnet.rpcUrl,
+  rpcUrl: NETWORKS.devnet.rpcUrl,
   chain: chain,
   walletClient: walletClient,
-  filesystemContractAddress: '0x0000000000000000000000000000000000000404' as `0x${string}`,
+  filesystemContractAddress: NETWORKS.devnet.filesystemContractAddress,
 });
 
 // Create Polkadot API client
-const provider = new WsProvider(NETWORKS.testnet.wsUrl);
+const provider = new WsProvider(NETWORKS.devnet.wsUrl);
 const polkadotApi: ApiPromise = await ApiPromise.create({
   provider,
   typesBundle: types,

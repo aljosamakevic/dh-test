@@ -1,17 +1,10 @@
 // --8<-- [start:imports]
 import { Bucket, FileListResponse } from '@storagehub-sdk/msp-client';
-import {
-  account,
-  address,
-  filesystemContractAddress,
-  publicClient,
-  walletClient,
-  polkadotApi,
-  chain,
-} from '../services/clientService.js';
+import { account, address, publicClient, walletClient, polkadotApi, chain } from '../services/clientService.js';
 import { getMspInfo, getValueProps, mspClient } from '../services/mspService.js';
 import { toHex } from 'viem';
 import fileSystemAbi from '../abis/FileSystem.json' with { type: 'json' };
+import { NETWORKS } from '../config/networks.js';
 // --8<-- [end:imports]
 
 // --8<-- [start:create-bucket]
@@ -25,7 +18,7 @@ export async function createBucket(bucketName: string) {
 
   // Derive bucket ID by calling the FileSystem precompile directly
   const bucketId = (await publicClient.readContract({
-    address: filesystemContractAddress,
+    address: NETWORKS.testnet.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'deriveBucketId',
     args: [address, toHex(bucketName)],
@@ -44,7 +37,7 @@ export async function createBucket(bucketName: string) {
   // Create bucket on chain by calling the FileSystem precompile directly
   const txHash = await walletClient.writeContract({
     account,
-    address: filesystemContractAddress,
+    address: NETWORKS.testnet.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'createBucket',
     args: [mspId as `0x${string}`, toHex(bucketName), isPrivate, valuePropId],
@@ -130,7 +123,7 @@ export async function deleteBucket(bucketId: string): Promise<boolean> {
   // Delete bucket on chain by calling the FileSystem precompile directly
   const txHash = await walletClient.writeContract({
     account,
-    address: filesystemContractAddress,
+    address: NETWORKS.testnet.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'deleteBucket',
     args: [bucketId as `0x${string}`],
@@ -166,7 +159,7 @@ export async function updateBucketPrivacy(bucketId: string, isPrivate: boolean):
   // Update bucket privacy on chain by calling the FileSystem precompile directly
   const txHash = await walletClient.writeContract({
     account,
-    address: filesystemContractAddress,
+    address: NETWORKS.testnet.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'updateBucketPrivacy',
     args: [bucketId as `0x${string}`, isPrivate],

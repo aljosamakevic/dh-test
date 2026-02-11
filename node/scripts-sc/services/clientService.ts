@@ -1,5 +1,5 @@
 import { privateKeyToAccount } from 'viem/accounts';
-import { Chain, defineChain } from 'viem';
+import { NETWORKS, chain } from '../config/networks.js';
 import { createPublicClient, createWalletClient, http, WalletClient, PublicClient } from 'viem';
 import { StorageHubClient } from '@storagehub-sdk/core';
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -14,34 +14,6 @@ const address = account.address;
 // Create signer from secret URI
 const walletKeyring = new Keyring({ type: 'ethereum' });
 const signer = walletKeyring.addFromUri(config.privateKey);
-
-const NETWORKS = {
-  devnet: {
-    id: 181222,
-    name: 'DataHaven Local Devnet',
-    rpcUrl: 'http://127.0.0.1:9666',
-    wsUrl: 'wss://127.0.0.1:9666',
-    mspUrl: 'http://127.0.0.1:8080/',
-    nativeCurrency: { name: 'StorageHub', symbol: 'SH', decimals: 18 },
-  },
-  testnet: {
-    id: 55931,
-    name: 'DataHaven Testnet',
-    rpcUrl: 'https://services.datahaven-testnet.network/testnet',
-    wsUrl: 'wss://services.datahaven-testnet.network/testnet',
-    mspUrl: 'https://deo-dh-backend.testnet.datahaven-infra.network/',
-    nativeCurrency: { name: 'Mock', symbol: 'MOCK', decimals: 18 },
-  },
-};
-
-const filesystemContractAddress = '0x0000000000000000000000000000000000000404' as `0x${string}`;
-
-const chain: Chain = defineChain({
-  id: NETWORKS.testnet.id,
-  name: NETWORKS.testnet.name,
-  nativeCurrency: NETWORKS.testnet.nativeCurrency,
-  rpcUrls: { default: { http: [NETWORKS.testnet.rpcUrl] } },
-});
 
 const walletClient: WalletClient = createWalletClient({
   chain,
@@ -59,7 +31,7 @@ const storageHubClient: StorageHubClient = new StorageHubClient({
   rpcUrl: NETWORKS.testnet.rpcUrl,
   chain: chain,
   walletClient: walletClient,
-  filesystemContractAddress: filesystemContractAddress,
+  filesystemContractAddress: NETWORKS.testnet.filesystemContractAddress,
 });
 
 // Create Polkadot API client
@@ -70,14 +42,4 @@ const polkadotApi: ApiPromise = await ApiPromise.create({
   noInitWarn: true,
 });
 
-export {
-  chain,
-  account,
-  address,
-  filesystemContractAddress,
-  publicClient,
-  walletClient,
-  storageHubClient,
-  polkadotApi,
-  signer,
-};
+export { chain, account, address, publicClient, walletClient, storageHubClient, polkadotApi, signer };

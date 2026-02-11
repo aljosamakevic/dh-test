@@ -4,17 +4,11 @@ import { createReadStream, statSync } from 'node:fs';
 import { Readable } from 'node:stream';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256 } from '@polkadot/types/interfaces';
-import {
-  account,
-  filesystemContractAddress,
-  publicClient,
-  walletClient,
-  polkadotApi,
-  chain,
-} from './services/clientService.js';
+import { account, publicClient, walletClient, polkadotApi, chain } from './services/clientService.js';
 import { getMspInfo } from './services/mspService.js';
 import { toHex } from 'viem';
 import fileSystemAbi from './abis/FileSystem.json' with { type: 'json' };
+import { NETWORKS } from './config/networks.js';
 import { revokeStorageRequest } from './operations/fileOperations.js';
 
 async function run() {
@@ -55,7 +49,7 @@ async function run() {
   // Issue storage request by calling the FileSystem precompile directly
   const txHash = await walletClient.writeContract({
     account,
-    address: filesystemContractAddress,
+    address: NETWORKS.testnet.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'issueStorageRequest',
     args: [
