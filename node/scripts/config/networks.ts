@@ -22,8 +22,8 @@ export const NETWORKS = {
 };
 
 export const chain: Chain = defineChain({
-  id: NETWORKS.devnet.id,
-  name: NETWORKS.devnet.name,
-  nativeCurrency: NETWORKS.devnet.nativeCurrency,
-  rpcUrls: { default: { http: [NETWORKS.devnet.rpcUrl] } },
+  id: NETWORKS.testnet.id,
+  name: NETWORKS.testnet.name,
+  nativeCurrency: NETWORKS.testnet.nativeCurrency,
+  rpcUrls: { default: { http: [NETWORKS.testnet.rpcUrl] } },
 });

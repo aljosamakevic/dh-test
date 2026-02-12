@@ -4,12 +4,15 @@ import { StorageHubClient } from '@storagehub-sdk/core';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { types } from '@storagehub/types-bundle';
 import { Keyring } from '@polkadot/api';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { config } from '../../src/config/environment.js';
 import { NETWORKS, chain } from '../config/networks.js';
 import 'dotenv/config'; // ***
 
 const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
 const address = account.address;
+
+await cryptoWaitReady();
 
 // Create signer from secret URI
 const walletKeyring = new Keyring({ type: 'ethereum' });
@@ -18,24 +21,24 @@ const signer = walletKeyring.addFromUri(config.privateKey);
 const walletClient: WalletClient = createWalletClient({
   chain,
   account,
-  transport: http(NETWORKS.devnet.rpcUrl),
+  transport: http(NETWORKS.testnet.rpcUrl),
 });
 
 const publicClient: PublicClient = createPublicClient({
   chain,
-  transport: http(NETWORKS.devnet.rpcUrl),
+  transport: http(NETWORKS.testnet.rpcUrl),
 });
 
 // Create StorageHub client
 const storageHubClient: StorageHubClient = new StorageHubClient({
-  rpcUrl: NETWORKS.devnet.rpcUrl,
+  rpcUrl: NETWORKS.testnet.rpcUrl,
   chain: chain,
   walletClient: walletClient,
-  filesystemContractAddress: NETWORKS.devnet.filesystemContractAddress,
+  filesystemContractAddress: NETWORKS.testnet.filesystemContractAddress,
 });
 
 // Create Polkadot API client
-const provider = new WsProvider(NETWORKS.devnet.wsUrl);
+const provider = new WsProvider(NETWORKS.testnet.wsUrl);
 const polkadotApi: ApiPromise = await ApiPromise.create({
   provider,
   typesBundle: types,

@@ -11,7 +11,7 @@ import { address, walletClient } from './clientService.js';
 import { NETWORKS } from '../config/networks.js';
 
 // Configure the HTTP client to point to the MSP backend
-const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.devnet.mspUrl };
+const httpCfg: HttpClientConfig = { baseUrl: NETWORKS.testnet.mspUrl };
 
 // Initialize a session token for authenticated requests (updated after authentication through SIWE)
 let sessionToken: string | undefined = undefined;
