@@ -22,7 +22,8 @@ export async function createBucket(bucketName: string) {
   const bucketBeforeCreation = await polkadotApi.query.providers.buckets(bucketId);
   console.log('Bucket before creation is empty', bucketBeforeCreation.isEmpty);
   if (!bucketBeforeCreation.isEmpty) {
-    throw new Error(`Bucket already exists: ${bucketId}`);
+    // throw new Error(`Bucket already exists: ${bucketId}`);
+    return { bucketId, txReceipt: null };
   }
 
   const isPrivate = false;
