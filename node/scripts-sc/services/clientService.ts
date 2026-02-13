@@ -1,5 +1,5 @@
 import { privateKeyToAccount } from 'viem/accounts';
-import { NETWORKS, chain } from '../config/networks.js';
+import { NETWORK, chain } from '../config/networks.js';
 import { createPublicClient, createWalletClient, http, WalletClient, PublicClient } from 'viem';
 import { StorageHubClient } from '@storagehub-sdk/core';
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -18,24 +18,24 @@ const signer = walletKeyring.addFromUri(config.privateKey);
 const walletClient: WalletClient = createWalletClient({
   chain,
   account,
-  transport: http(NETWORKS.testnet.rpcUrl),
+  transport: http(NETWORK.rpcUrl),
 });
 
 const publicClient: PublicClient = createPublicClient({
   chain,
-  transport: http(NETWORKS.testnet.rpcUrl),
+  transport: http(NETWORK.rpcUrl),
 });
 
 // Create StorageHub client
 const storageHubClient: StorageHubClient = new StorageHubClient({
-  rpcUrl: NETWORKS.testnet.rpcUrl,
+  rpcUrl: NETWORK.rpcUrl,
   chain: chain,
   walletClient: walletClient,
-  filesystemContractAddress: NETWORKS.testnet.filesystemContractAddress,
+  filesystemContractAddress: NETWORK.filesystemContractAddress,
 });
 
 // Create Polkadot API client
-const provider = new WsProvider(NETWORKS.testnet.wsUrl);
+const provider = new WsProvider(NETWORK.wsUrl);
 const polkadotApi: ApiPromise = await ApiPromise.create({
   provider,
   typesBundle: types,
