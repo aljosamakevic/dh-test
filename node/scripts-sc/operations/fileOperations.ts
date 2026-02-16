@@ -9,8 +9,8 @@ import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.
 import { DownloadResult, FileListResponse } from '@storagehub-sdk/msp-client';
 import { PalletFileSystemStorageRequestMetadata } from '@polkadot/types/lookup';
 import { toHex, hexToBytes } from 'viem';
-import { NETWORKS } from '../config/networks.js';
-import fileSystemAbi from '../abis/FileSystem.json' with { type: 'json' };
+import { NETWORK, NETWORKS } from '../config/networks.js';
+import fileSystemAbi from '../abis/FileSystemABI.json' with { type: 'json' };
 // --8<-- [end:imports]
 
 export async function uploadFile(bucketId: string, filePath: string, fileName: string) {
@@ -67,7 +67,7 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   // Issue storage request by calling the FileSystem precompile directly
   const txHash = await walletClient.writeContract({
     account,
-    address: NETWORKS.testnet.filesystemContractAddress,
+    address: NETWORK.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'issueStorageRequest',
     args: [
@@ -304,7 +304,7 @@ export async function requestDeleteFile(bucketId: string, fileKey: string): Prom
   // Request file deletion by calling the FileSystem precompile directly
   const txHashRequestDeleteFile = await walletClient.writeContract({
     account,
-    address: NETWORKS.testnet.filesystemContractAddress,
+    address: NETWORK.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'requestDeleteFile',
     args: [
@@ -338,7 +338,7 @@ export async function revokeStorageRequest(fileKey: string): Promise<boolean> {
   // Revoke a pending storage request by calling the FileSystem precompile directly
   const txHash = await walletClient.writeContract({
     account,
-    address: NETWORKS.testnet.filesystemContractAddress,
+    address: NETWORK.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'revokeStorageRequest',
     args: [fileKey as `0x${string}`],
@@ -370,7 +370,7 @@ export async function getPendingFileDeletionRequestsCount(user?: `0x${string}`):
   const targetAddress = user ?? address;
 
   const count = (await publicClient.readContract({
-    address: NETWORKS.testnet.filesystemContractAddress,
+    address: NETWORK.filesystemContractAddress,
     abi: fileSystemAbi,
     functionName: 'getPendingFileDeletionRequestsCount',
     args: [targetAddress],

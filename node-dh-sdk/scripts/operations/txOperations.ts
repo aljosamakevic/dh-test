@@ -1,5 +1,6 @@
 import type { EvmWriteOptions } from '@storagehub-sdk/core';
 import { createPublicClient, Chain, http, PublicClient, defineChain } from 'viem';
+import { NETWORK } from '../config/networks';
 
 const NETWORKS = {
   testnet: {
@@ -13,15 +14,15 @@ const NETWORKS = {
 };
 
 const chain: Chain = defineChain({
-  id: NETWORKS.testnet.id,
-  name: NETWORKS.testnet.name,
-  nativeCurrency: NETWORKS.testnet.nativeCurrency,
-  rpcUrls: { default: { http: [NETWORKS.testnet.rpcUrl] } },
+  id: NETWORK.id,
+  name: NETWORK.name,
+  nativeCurrency: NETWORK.nativeCurrency,
+  rpcUrls: { default: { http: [NETWORK.rpcUrl] } },
 });
 
 const publicClient: PublicClient = createPublicClient({
   chain,
-  transport: http(NETWORKS.testnet.rpcUrl),
+  transport: http(NETWORK.rpcUrl),
 });
 
 const buildGasTxOpts = async (): Promise<EvmWriteOptions> => {
