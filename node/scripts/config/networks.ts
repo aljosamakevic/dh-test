@@ -21,7 +21,7 @@ export const NETWORKS = {
   },
 };
 
-export const NETWORK = NETWORKS.testnet; // Change this to switch between devnet and testnet
+export const NETWORK = NETWORKS.devnet; // Change this to switch between devnet and testnet
 
 export const chain: Chain = defineChain({
   id: NETWORK.id,
