@@ -90,7 +90,7 @@ async function run() {
   if (storageRequestAfter.isNone) {
     console.log('Storage request successfully removed from chain after revocation');
   } else {
-    console.log('WARNING: Storage request still exists on chain after revocation');
+    throw new Error('Storage request revocation failed — request still exists on chain');
   }
 
   await polkadotApi.disconnect();

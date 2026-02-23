@@ -7,8 +7,8 @@ import { waitForBackendBucketEmpty, deleteBucket } from './operations/bucketOper
 async function run() {
   await initWasm();
 
-  const bucketId = '0xdfe5918747e234609fa3cdc804b30c647988e3e4a76cb830bcfa281a65b9db60';
-  const fileKey = '0xa8e1ba9bee31f1406991205c75974bd524d2b57b86eb1d324dab187fde29f27f';
+  const bucketId = '0x7c457fccb132d1a30809a7b9d34b75256af350eca7a89a689259e253ac9a01b3';
+  const fileKey = '0x19fe09f8e541f011f857fae93ce657db04d28b517464ff83ae065b7b4ac0647f';
 
   // 1. Check pending file deletion requests count BEFORE deletion
   const countBefore = await getPendingFileDeletionRequestsCount();

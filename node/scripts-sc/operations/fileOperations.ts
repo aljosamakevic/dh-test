@@ -369,12 +369,14 @@ export async function getPendingFileDeletionRequestsCount(user?: `0x${string}`):
   // Defaults to the current account address if no user is provided
   const targetAddress = user ?? address;
 
-  const count = (await publicClient.readContract({
-    address: NETWORK.filesystemContractAddress,
-    abi: fileSystemAbi,
-    functionName: 'getPendingFileDeletionRequestsCount',
-    args: [targetAddress],
-  })) as number;
+  const count = Number(
+    await publicClient.readContract({
+      address: NETWORK.filesystemContractAddress,
+      abi: fileSystemAbi,
+      functionName: 'getPendingFileDeletionRequestsCount',
+      args: [targetAddress],
+    })
+  );
   console.log(`Pending file deletion requests for ${targetAddress}: ${count}`);
 
   return count;
