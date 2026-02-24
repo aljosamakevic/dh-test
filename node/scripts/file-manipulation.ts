@@ -18,7 +18,7 @@ async function run() {
   // Example (32byte hash):
   // 0xdd2148ff63c15826ab42953a9d214770e6c8a73b22b83d28819a1777ab9d1322
   const bucketId = '0x155478dea29a1ff0557ee8884ac26c77112ed235c91d8efa3a8e7c4abddbeea2';
-
+  // test
   // Specify the file name of the file to be uploaded
   const fileName = 'helloworld.txt'; // Example: filename.jpeg
   const filePath = new URL(`./files/${fileName}`, import.meta.url).pathname;
