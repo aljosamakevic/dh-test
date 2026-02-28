@@ -11,6 +11,7 @@ import { PalletFileSystemStorageRequestMetadata } from '@polkadot/types/lookup';
 import { toHex, hexToBytes } from 'viem';
 import { NETWORK, NETWORKS } from '../config/networks.js';
 import fileSystemAbi from '../abis/FileSystemABI.json' with { type: 'json' };
+import { StorageFileInfo } from '@storagehub-sdk/msp-client';
 // --8<-- [end:imports]
 
 export async function uploadFile(bucketId: string, filePath: string, fileName: string) {

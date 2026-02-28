@@ -126,10 +126,11 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   // --8<-- [start:upload-file]
   // Upload file to MSP
   const uploadReceipt = await mspClient.files.uploadFile(
-    bucketId,
-    fileKey.toHex(),
+    bucketId as `0x${string}`,
+    fileKey.toHex() as `0x${string}`,
     await fileManager.getFileBlob(),
-    address,
+    fingerprint.toHex() as `0x${string}`,
+    address as `0x${string}`,
     fileName
   );
   console.log('File upload receipt:', uploadReceipt);
