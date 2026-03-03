@@ -15,7 +15,7 @@ export async function createBucket(bucketName: string) {
   console.log(`Value Prop ID: ${valuePropId}`);
 
   // Derive bucket ID
-  const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as string;
+  const bucketId = (await storageHubClient.deriveBucketId(address, bucketName)) as `0x${string}`;
   console.log(`Derived bucket ID: ${bucketId}`);
 
   // Check that the bucket doesn't exist yet
@@ -58,7 +58,7 @@ export async function createBucket(bucketName: string) {
 
 // --8<-- [start:verify-bucket]
 // Verify bucket creation on chain and return bucket data
-export async function verifyBucketCreation(bucketId: string) {
+export async function verifyBucketCreation(bucketId: `0x${string}`) {
   const { mspId } = await getMspInfo();
 
   const bucket = await polkadotApi.query.providers.buckets(bucketId);
@@ -86,7 +86,7 @@ export async function verifyBucketCreation(bucketId: string) {
 // --8<-- [end:verify-bucket]
 
 // --8<-- [start:wait-for-backend-bucket-ready]
-export async function waitForBackendBucketReady(bucketId: string) {
+export async function waitForBackendBucketReady(bucketId: `0x${string}`) {
   const maxAttempts = 10;
   const delayMs = 2000;
 
@@ -114,8 +114,8 @@ export async function waitForBackendBucketReady(bucketId: string) {
 // --8<-- [end:wait-for-backend-bucket-ready]
 
 // --8<-- [start:delete-bucket]
-export async function deleteBucket(bucketId: string): Promise<boolean> {
-  const txHash: `0x${string}` | undefined = await storageHubClient.deleteBucket(bucketId as `0x${string}`);
+export async function deleteBucket(bucketId: `0x${string}`): Promise<boolean> {
+  const txHash: `0x${string}` | undefined = await storageHubClient.deleteBucket(bucketId);
   console.log('deleteBucket() txHash:', txHash);
   if (!txHash) {
     throw new Error('deleteBucket() did not return a transaction hash');
@@ -142,7 +142,7 @@ export async function getBucketsFromMSP(): Promise<Bucket[]> {
 // --8<-- [end:get-buckets-msp]
 
 // --8<-- [start:wait-for-backend-bucket-empty]
-export async function waitForBackendBucketEmpty(bucketId: string) {
+export async function waitForBackendBucketEmpty(bucketId: `0x${string}`) {
   const maxAttempts = 144;
   const delayMs = 5000;
 

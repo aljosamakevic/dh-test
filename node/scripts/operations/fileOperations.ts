@@ -1,14 +1,31 @@
 // --8<-- [start:imports]
-import { createReadStream, statSync, createWriteStream } from 'node:fs';
+import { createReadStream, statSync, createWriteStream, readFileSync } from 'node:fs';
 import { Readable } from 'node:stream';
 import { FileInfo, FileManager, ReplicationLevel } from '@storagehub-sdk/core';
 import { TypeRegistry } from '@polkadot/types';
 import { AccountId20, H256 } from '@polkadot/types/interfaces';
 import { storageHubClient, address, publicClient, polkadotApi, account } from '../services/clientService.js';
 import { mspClient, getMspInfo, authenticateUser } from '../services/mspService.js';
-import { DownloadResult, FileListResponse } from '@storagehub-sdk/msp-client';
+import { DownloadResult, FileListResponse, FileTree } from '@storagehub-sdk/msp-client';
 import { PalletFileSystemStorageRequestMetadata } from '@polkadot/types/lookup';
+import path from 'node:path';
+import mime from 'mime-types';
 // --8<-- [end:imports]
+
+function createInMemoryFile(filePath: string): File {
+  const { base } = path.parse(filePath);
+  const mimeType = mime.lookup(base);
+
+  if (!mimeType) {
+    throw new Error(`Failed to get mime type for file: ${base}`);
+  }
+
+  const buffer = readFileSync(filePath);
+  const uint8Array = new Uint8Array(buffer);
+  const file = new File([uint8Array], base, { type: mimeType });
+
+  return file;
+}
 
 export async function uploadFile(bucketId: string, filePath: string, fileName: string) {
   //   ISSUE STORAGE REQUEST
@@ -94,6 +111,8 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   const owner = registry.createType('AccountId20', account.address) as AccountId20;
   const bucketIdH256 = registry.createType('H256', bucketId) as H256;
   const fileKey = await fileManager.computeFileKey(owner, bucketIdH256, fileName);
+
+  const file = createInMemoryFile(filePath);
   // --8<-- [end:compute-file-key]
 
   // --8<-- [start:verify-storage-request]
@@ -123,13 +142,20 @@ export async function uploadFile(bucketId: string, filePath: string, fileName: s
   console.log('Authenticated user profile:', authProfile);
   // --8<-- [end:authenticate]
 
+  setTimeout(() => {
+    console.log(
+      'Waiting 10 seconds before uploading file to MSP, to allow time for the storage request to be indexed by the MSP after being confirmed on-chain...'
+    );
+  }, 4000);
+
   // --8<-- [start:upload-file]
   // Upload file to MSP
   const uploadReceipt = await mspClient.files.uploadFile(
     bucketId as `0x${string}`,
-    fileKey.toHex() as `0x${string}`,
-    await fileManager.getFileBlob(),
-    fingerprint.toHex() as `0x${string}`,
+    fileKey.toHex(),
+    file.stream(),
+    // await fileManager.getFileBlob(),
+    fingerprint.toHex(),
     address as `0x${string}`,
     fileName
   );
@@ -195,7 +221,7 @@ export async function verifyDownload(originalPath: string, downloadedPath: strin
 // --8<-- [end:verify-download]
 
 // --8<-- [start:wait-for-msp-confirm-on-chain]
-export async function waitForMSPConfirmOnChain(fileKey: string) {
+export async function waitForMSPConfirmOnChain(fileKey: `0x${string}`) {
   const maxAttempts = 20;
   const delayMs = 2000;
 
@@ -205,10 +231,10 @@ export async function waitForMSPConfirmOnChain(fileKey: string) {
     );
 
     const req = await polkadotApi.query.fileSystem.storageRequests(fileKey);
-    if (req.isNone) {
+    if (!req.isSome) {
       throw new Error(`StorageRequest for ${fileKey} no longer exists on-chain.`);
     }
-    const data: PalletFileSystemStorageRequestMetadata = req.unwrap();
+    const data = req.unwrap();
     // console.log('Storage request data:', data.toHuman());
     // MSP confirmation
     const mspStatus = data.mspStatus;
@@ -228,7 +254,7 @@ export async function waitForMSPConfirmOnChain(fileKey: string) {
 // --8<-- [end:wait-for-msp-confirm-on-chain]
 
 // --8<-- [start:wait-for-backend-file-ready]
-export async function waitForBackendFileReady(bucketId: string, fileKey: string) {
+export async function waitForBackendFileReady(bucketId: `0x${string}`, fileKey: `0x${string}`) {
   // wait up to 12 minutes (144 attempts x 5 seconds)
   // around 11 minutes is the amount of time BSPs have to reach the required replication level
   const maxAttempts = 144;
@@ -269,7 +295,7 @@ export async function waitForBackendFileReady(bucketId: string, fileKey: string)
 // --8<-- [end:wait-for-backend-file-ready]
 
 // --8<-- [start:request-file-deletion]
-export async function requestDeleteFile(bucketId: string, fileKey: string): Promise<boolean> {
+export async function requestDeleteFile(bucketId: `0x${string}`, fileKey: `0x${string}`): Promise<boolean> {
   // Get file info before deletion
   const fileInfo: FileInfo = await mspClient.files.getFileInfo(bucketId, fileKey);
   console.log('File info:', fileInfo);
@@ -293,8 +319,44 @@ export async function requestDeleteFile(bucketId: string, fileKey: string): Prom
 // --8<-- [end:request-file-deletion]
 
 // --8<-- [start:get-bucket-files-msp]
-export async function getBucketFilesFromMSP(bucketId: string): Promise<FileListResponse> {
+export async function getBucketFilesFromMSP(bucketId: `0x${string}`): Promise<FileListResponse> {
   const files: FileListResponse = await mspClient.buckets.getFiles(bucketId);
   return files;
 }
 // --8<-- [end:get-bucket-files-msp]
+
+// --8<-- [start:delete-all-files-in-bucket]
+export async function deleteAllFilesInBucket(bucketId: `0x${string}`): Promise<FileListResponse> {
+  const fileList = await getBucketFilesFromMSP(bucketId);
+
+  // Recursively collect all file keys from the tree (folders can contain nested files)
+  function collectFileKeys(entries: FileTree[]): `0x${string}`[] {
+    const keys: `0x${string}`[] = [];
+    for (const entry of entries) {
+      if (entry.type === 'file') {
+        keys.push(entry.fileKey);
+      } else {
+        keys.push(...collectFileKeys(entry.children));
+      }
+    }
+    return keys;
+  }
+
+  const fileKeys = collectFileKeys(fileList.files);
+
+  if (fileKeys.length === 0) {
+    console.log(`No files found in bucket ${bucketId}. Nothing to delete.`);
+    return fileList;
+  }
+
+  console.log(`Found ${fileKeys.length} file(s) in bucket ${bucketId}. Deleting all...`);
+
+  for (const fileKey of fileKeys) {
+    console.log(`Deleting file with key: ${fileKey}`);
+    await requestDeleteFile(bucketId, fileKey);
+  }
+
+  console.log(`All ${fileKeys.length} file(s) deletion requests submitted for bucket ${bucketId}.`);
+  return fileList;
+}
+// --8<-- [end:delete-all-files-in-bucket]

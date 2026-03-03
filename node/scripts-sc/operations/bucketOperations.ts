@@ -144,7 +144,7 @@ export async function getBucketsFromMSP(): Promise<Bucket[]> {
 // --8<-- [end:get-buckets-msp]
 
 // --8<-- [start:update-bucket-privacy]
-export async function updateBucketPrivacy(bucketId: string, isPrivate: boolean): Promise<boolean> {
+export async function updateBucketPrivacy(bucketId: `0x${string}`, isPrivate: boolean): Promise<boolean> {
   // Update bucket privacy on chain by calling the FileSystem precompile directly
   const txHash = await walletClient.writeContract({
     account,
@@ -174,7 +174,7 @@ export async function updateBucketPrivacy(bucketId: string, isPrivate: boolean):
 // --8<-- [end:update-bucket-privacy]
 
 // --8<-- [start:wait-for-backend-bucket-empty]
-export async function waitForBackendBucketEmpty(bucketId: string) {
+export async function waitForBackendBucketEmpty(bucketId: `0x${string}`) {
   const maxAttempts = 144;
   const delayMs = 5000;
 
@@ -204,3 +204,8 @@ export async function waitForBackendBucketEmpty(bucketId: string) {
   throw new Error(`Bucket ${bucketId} not empty in MSP backend after waiting`);
 }
 // --8<-- [end:wait-for-backend-bucket-empty]
+
+export async function getBucketFromMSP(bucketId: `0x${string}`): Promise<Bucket> {
+  const bucket: Bucket = await mspClient.buckets.getBucket(bucketId);
+  return bucket;
+}
