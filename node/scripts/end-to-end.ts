@@ -77,6 +77,8 @@ async function run() {
   console.log(`File integrity verified: ${isValid ? 'PASSED' : 'FAILED'}`);
   // --8<-- [end:verify-download]
 
+  // test
+
   console.log('🚀 DataHaven Storage End-to-End Script Completed Successfully.');
 
   await polkadotApi.disconnect();
